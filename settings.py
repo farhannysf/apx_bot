@@ -4,3 +4,4 @@ from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 
 discordToken = environ['discordToken']
+channelId = environ['channelId']
