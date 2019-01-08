@@ -40,7 +40,7 @@ async def embify(serverData, playerData):
     embed = discord.Embed(title=serverName, description=serverStats.title(), color=0x00ff00)
     embed.set_thumbnail(url='https://units.arma3.com/groups/img/32641/06EvpC7yf0.png')
     
-    if  serverStats == 'offline':
+    if serverStats == 'offline':
         return embed
     
     elif serverStats == 'online':
@@ -60,18 +60,22 @@ async def on_ready():
 
 @client.command(pass_context=True)
 async def serverstats(ctx, serverNumber:int=None):
-    if serverNumber == 1 or serverNumber == 4:
-        server = serverList[serverNumber]
-        serverData = await getData(f'https://api.battlemetrics.com/servers/{server}', params=None)
-        if serverData is None:
-            await client.say('An error has occured, please contact Reximus')
+    if ctx.message.channel.id == settings.channelId:
+        if serverNumber == 1 or serverNumber == 4:
+            server = serverList[serverNumber]
+            serverData = await getData(f'https://api.battlemetrics.com/servers/{server}', params=None)
+            
+            if serverData is None:
+                await client.say(f'An error has occured, please contact {settings.authorId}')
+            
+            else:
+                playerData = await getData('https://api.battlemetrics.com/players', params={'filter[servers]':server, 
+                    'filter[online]':'true', 'page[size]':serverData['data']['attributes']['maxPlayers']})
+                embed = await embify(serverData, playerData)
+                await client.say(embed=embed)
+        
         else:
-            playerData = await getData('https://api.battlemetrics.com/players', params={'filter[servers]':server, 
-                'filter[online]':'true', 'page[size]':serverData['data']['attributes']['maxPlayers']})
-            embed = await embify(serverData, playerData)
-            await client.say(embed=embed)
-    else:
-        await client.say('`Usage: !serverstats [server number] (only server 1 and 4 are supported)`')
+            await client.say('`Usage: !serverstats [server number] (only server 1 and 4 are supported)`')
 
 if __name__ == '__main__':
     client.run(settings.discordToken)
