@@ -18,7 +18,7 @@ async def asyncGet(*args, **kwargs):
 
 async def getData(url, params):
     response = await asyncGet(url, params=params)
-    if response.status_code == 200:
+    if response.status == 200:
         data = await response.json()
     
     return data
