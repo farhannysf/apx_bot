@@ -5,7 +5,7 @@ A simple Discord bot to show APX servers status for ArmA 3.
 This project is made to improve convenience and reduce time spent when checking current mission and number of players of APX ArmA 3 servers through Discord integration.
 
 # Features
-The bot is actively hosted on APX Discord guild. It is able to show current mission, number of players and active players list on either server 1 or 4 when !serverstats command is invoked by a user. The bot is also containerized using Docker to provide more convenience in deployment.
+The bot is actively hosted on APX Discord guild. It is able to show current mission, number of players and active players list on either server 1 or 4 when !serverstats command is invoked by a user. The bot is also containerized using Docker to provide more portability in deployment and use Sentry for logging and error tracking.
 
 ### Usage example
 
