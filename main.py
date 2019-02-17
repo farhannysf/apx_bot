@@ -2,12 +2,18 @@ import asyncio
 import aiohttp
 import discord
 import settings
+import discord
+import logging
+import sentry_sdk
 
 from discord.ext import commands
+from sentry_sdk import capture_message
 
+logging.basicConfig(level=logging.INFO)
+sentry_sdk.init("https://d848feec91f2467580211ae19b5538a2@sentry.io/1371559")
 client = commands.Bot(command_prefix='!')
 
-serverList = {1:'3219782', 4:'3244423'}
+serverList = {1:'1015436', 4:'3244423'}
 
 async def asyncGet(*args, **kwargs):
     async with aiohttp.ClientSession() as client:
@@ -18,11 +24,13 @@ async def asyncGet(*args, **kwargs):
 
 async def getData(url, params):
     response = await asyncGet(url, params=params)
-    if response.status == 200:
-        data = await response.json()
     
-    return data
-
+    if response.status == 203:
+        data = await response.json()
+        return data    
+    else:
+        capture_message(f'Battlemetrics API: {response.status}')
+    
 async def embify(serverData, playerData):
     if not playerData['data']:
         players = 'No active players.'
@@ -44,10 +52,10 @@ async def embify(serverData, playerData):
         embed.add_field(name="Mission", value=serverMission, inline=True)
         embed.add_field(name="Players", value=f'{activePlayer}/{maxPlayer}', inline=True)
         embed.add_field(name="Active Players", value=players, inline=False)
- 
-    else:
-        return embed  
     
+    elif serverStats == 'dead' or serverStats == 'removed':
+        capture_message(f'{serverName} is {serverStats}')
+
     return embed
 
 
@@ -72,8 +80,6 @@ async def serverstats(ctx, serverNumber:int=None):
                 playerData = await getData('https://api.battlemetrics.com/players', params={'filter[servers]':server, 
                     'filter[online]':'true', 'page[size]':serverData['data']['attributes']['maxPlayers']})
                 embed = await embify(serverData, playerData)
-                print (serverData)
-                print (embed)
                 await client.say(embed=embed)
         
         else:
@@ -81,3 +87,4 @@ async def serverstats(ctx, serverNumber:int=None):
 
 if __name__ == '__main__':
     client.run(settings.discordToken)
+    
