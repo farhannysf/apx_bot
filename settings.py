@@ -6,3 +6,4 @@ load_dotenv(find_dotenv())
 discordToken = environ['discordToken']
 channelId = environ['channelId']
 authorId = environ['authorId']
+sentryUrl = environ['sentryUrl']

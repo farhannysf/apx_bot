@@ -3,3 +3,4 @@ aiohttp
 sanic
 python-dotenv
 discord.py
+sentry-sdk

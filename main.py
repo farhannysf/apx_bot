@@ -10,10 +10,10 @@ from discord.ext import commands
 from sentry_sdk import capture_message
 
 logging.basicConfig(level=logging.INFO)
-sentry_sdk.init("https://d848feec91f2467580211ae19b5538a2@sentry.io/1371559")
+sentry_sdk.init(settings.sentryUrl)
 client = commands.Bot(command_prefix='!')
 
-serverList = {1:'1015436', 4:'3244423'}
+serverList = {1:'3219782', 4:'3244423'}
 
 async def asyncGet(*args, **kwargs):
     async with aiohttp.ClientSession() as client:
@@ -25,7 +25,7 @@ async def asyncGet(*args, **kwargs):
 async def getData(url, params):
     response = await asyncGet(url, params=params)
     
-    if response.status == 203:
+    if response.status == 200:
         data = await response.json()
         return data    
     else:
