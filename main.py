@@ -5,12 +5,18 @@ import settings
 import discord
 import logging
 import sentry_sdk
+import analytics
 
 from discord.ext import commands
 from sentry_sdk import capture_message
 
+# Initiate logging and sentry
 logging.basicConfig(level=logging.INFO)
 sentry_sdk.init(settings.sentryUrl)
+
+#Initiate Segment analytics
+analytics.write_key = settings.segmentKey
+
 client = commands.Bot(command_prefix='!')
 
 serverList = {1:'3219782', 4:'3244423'}
@@ -84,7 +90,16 @@ async def serverstats(ctx, serverNumber:int=None):
         
         else:
             await client.say('`Usage: !serverstats [server number] (only server 1 and 4 are supported)`')
+    
+    analytics.track(ctx.message.author.id, 'Server Info Request', {
+        'User ID': ctx.message.author.id,
+        'Username': ctx.message.author.name,
+        'Channel ID': ctx.message.channel.id,
+        'Channel name': ctx.message.channel.name,
+        'Guild ID': ctx.message.server.id,
+        'Guild name': ctx.message.server.name,
+        'Server number': serverNumber
+    })
 
 if __name__ == '__main__':
     client.run(settings.discordToken)
-    
