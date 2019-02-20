@@ -5,3 +5,4 @@ python-dotenv
 discord.py
 sentry-sdk
 analytics-python
+google-cloud-firestore

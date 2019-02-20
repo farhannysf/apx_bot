@@ -7,15 +7,21 @@ import logging
 import sentry_sdk
 import analytics
 
+from google.cloud import firestore
 from discord.ext import commands
 from sentry_sdk import capture_message
 
+# Initiate Google Cloud Firestore
+db = firestore.Client()
+keys = settings.retrieveKeys(db)
+
 # Initiate logging and sentry
 logging.basicConfig(level=logging.INFO)
-sentry_sdk.init(settings.sentryUrl)
+sentry_sdk.init(keys['sentryUrl'])
 
-#Initiate Segment analytics
-analytics.write_key = settings.segmentKey
+# Initiate Segment analytics
+analytics.write_key = keys['segmentKey']
+
 
 client = commands.Bot(command_prefix='!')
 
@@ -74,13 +80,13 @@ async def on_ready():
 
 @client.command(pass_context=True)
 async def serverstats(ctx, serverNumber:int=None):
-    if ctx.message.channel.id == settings.channelId:
+    if ctx.message.channel.id == keys['channelId']:
         if serverNumber == 1 or serverNumber == 4:
             server = serverList[serverNumber]
             serverData = await getData(f'https://api.battlemetrics.com/servers/{server}', params=None)
             
             if serverData is None:
-                await client.say(f'An error has occured, please contact {settings.authorId}')
+                await client.say(f'An error has occured, please contact {author}')
             
             else:
                 playerData = await getData('https://api.battlemetrics.com/players', params={'filter[servers]':server, 
@@ -102,4 +108,5 @@ async def serverstats(ctx, serverNumber:int=None):
     })
 
 if __name__ == '__main__':
-    client.run(settings.discordToken)
+    author = keys['authorId']
+    client.run(keys['discordToken'])
