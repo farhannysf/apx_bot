@@ -7,9 +7,19 @@ import logging
 import sentry_sdk
 import analytics
 
+from sanic import Sanic
 from google.cloud import firestore
 from discord.ext import commands
 from sentry_sdk import capture_message
+
+async def webserver():
+    app = Sanic(__name__)
+
+    @app.route("/overridechat", methods=["POST"])
+    async def chat_override(request):
+        return response.json({"status": "success"})
+
+    return await app.create_server(host="0.0.0.0", port=8080)
 
 # Initiate Google Cloud Firestore
 db = firestore.Client()
@@ -21,7 +31,6 @@ sentry_sdk.init(keys['sentryUrl'])
 
 # Initiate Segment analytics
 analytics.write_key = keys['segmentKey']
-
 
 client = commands.Bot(command_prefix='!')
 
@@ -77,6 +86,8 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print('------')
+    client.loop.create_task(webserver())
+
 
 @client.command(pass_context=True)
 async def serverstats(ctx, serverNumber:int=None):
