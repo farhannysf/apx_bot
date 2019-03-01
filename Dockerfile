@@ -12,6 +12,6 @@ RUN pip install -r requirements.txt
 
 COPY . /app
 
-EXPOSE 80
+ENV PORT 8080
 
 CMD ["python", "main.py"]
