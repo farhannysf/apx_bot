@@ -26,4 +26,8 @@ The bot is actively hosted on APX Discord guild. It is able to show current miss
 * [Battlemetrics](https://www.battlemetrics.com/developers/documentation)
 
 ### Site
+<<<<<<< HEAD
 * [Amplitude](https://amplitude.com/)
+=======
+* [Amplitude](https://amplitude.com/)
+>>>>>>> 15ba8d48f1420d942efd18f00d3dee975be87b9a
