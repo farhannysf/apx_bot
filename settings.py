@@ -10,7 +10,7 @@ async def asyncGet(*args, **kwargs):
 
             return response
 
-async def getData(url, params):
+async def getData(url, params, capture_message):
     response = await asyncGet(url, params=params)
     
     if response.status == 200:

@@ -36,7 +36,7 @@ async def serverstatsLogic(ctx, serverNumber):
             availableServers = '\n'.join('Server {} (Battlemetrics ID: {})'.format(key, value) for key, value in serverList.items())
             return await client.say(f'`Usage: !serverstats [server number]`\n\nAvailable servers:\n` {availableServers} `')
 
-        serverData = await settings.getData(f'https://api.battlemetrics.com/servers/{server}', params=None)
+        serverData = await settings.getData(f'https://api.battlemetrics.com/servers/{server}', params=None, capture_message)
             
         if serverData is None:
             return await client.say(f'An error has occured, please contact {author}')
