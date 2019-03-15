@@ -25,12 +25,14 @@ analytics.write_key = keys['segmentKey']
 async def serverstatsLogic(ctx, serverNumber):
     if ctx.message.channel.id == keys['channelId']:
         serverList = settings.retrieveData(db, option='serverlist', title=ctx.message.channel.id)
+        
         if serverList is None:
             return await client.say('No server is set. Use `!serverconfig` for more info.')
 
         try:
             server = serverList[str(serverNumber)]
-        except:
+        
+        except KeyError:
             availableServers = '\n'.join('Server {} (Battlemetrics ID: {})'.format(key, value) for key, value in serverList.items())
             return await client.say(f'`Usage: !serverstats [server number]`\n\nAvailable servers:\n` {availableServers} `')
 
@@ -62,7 +64,7 @@ async def server_updateLogic(ctx, operation, serverNumber, serverId):
             return await client.say(usageMessage)
         data = {str(serverNumber):str(serverId)}
         serverlistDb.update(data)
-        return await client.say(f'**Updated server list.**\n `Server {serverNumber} (Battlemetrics ID: {serverId})`')
+        return await client.say(f'**Updated server list.**\n `Server {serverNumber} (Battlemetrics ID: {serverId})`'), operation, data
     
     else:
         return await client.say(usageMessage)
@@ -93,6 +95,17 @@ async def serverstats(ctx, serverNumber:int=None):
 async def serverconfig(ctx, operation:str=None, serverNumber:int=None, serverId:int=None):
     await server_updateLogic(ctx, operation, serverNumber, serverId)
 
+    analytics.track(ctx.message.author.id, 'Server List Config Request', {
+        'User ID': ctx.message.author.id,
+        'Username': ctx.message.author.name,
+        'Channel ID': ctx.message.channel.id,
+        'Channel name': ctx.message.channel.name,
+        'Guild ID': ctx.message.server.id,
+        'Guild name': ctx.message.server.name,
+        'Operation': operation,
+        'Server number': serverNumber,
+        'Server ID': serverId,
+    })
 if __name__ == '__main__':
     author = keys['authorId']
     client.run(keys['discordToken'])
