@@ -43,7 +43,7 @@ async def serverstatsLogic(ctx, serverNumber):
         
         else:
             playerData = await settings.getData('https://api.battlemetrics.com/players', params={'filter[servers]':server, 
-                'filter[online]':'true', 'page[size]':serverData['data']['attributes']['maxPlayers']})
+                'filter[online]':'true', 'page[size]':serverData['data']['attributes']['maxPlayers']}, capture_message=capture_message)
             embed = await settings.embify(serverData, playerData, discord.Embed)
             return await client.say(embed=embed)
 
