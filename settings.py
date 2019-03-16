@@ -19,7 +19,7 @@ async def getData(url, params, capture_message):
     else:
         capture_message(f'Battlemetrics API: {response.status}')
     
-async def embify(serverData, playerData, discordEmbed):
+async def embify(serverData, playerData, discordEmbed, capture_message):
     if not playerData['data']:
         players = 'No active players.'
     
