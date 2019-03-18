@@ -1,6 +1,7 @@
+import sys
 import asyncio
 import discord
-import settings
+import utility
 import logging
 import sentry_sdk
 import analytics
@@ -13,7 +14,7 @@ client = commands.Bot(command_prefix='!')
 
 # Initiate Google Cloud Firestore
 db = firestore.Client()
-keys = settings.retrieveData(db, option='keys', title='api')
+keys = utility.retrieveDb_data(db, option='keys', title='api')
  
 # Initiate logging and sentry
 logging.basicConfig(level=logging.INFO)
@@ -22,15 +23,13 @@ sentry_sdk.init(keys['sentryUrl'])
 # Initiate Segment analytics
 analytics.write_key = keys['segmentKey']
 
-channelList = settings.retrieveData(db, option='channellist', title='channelid')
-
 async def serverstatsLogic(ctx, serverNumber):
     try:
         channelList[f'{ctx.message.channel.id}']
     except KeyError:
         return
         
-    serverList = settings.retrieveData(db, option='serverlist', title=ctx.message.channel.id)
+    serverList = utility.retrieveDb_data(db, option='serverlist', title=ctx.message.channel.id)
     
     if serverList is None:
         return await client.say('No server is set. Use `!serverconfig` for more info.')
@@ -42,15 +41,15 @@ async def serverstatsLogic(ctx, serverNumber):
         availableServers = '\n'.join('Server {} (Battlemetrics ID: {})'.format(key, value) for key, value in serverList.items())
         return await client.say(f'`Usage: !serverstats [server number]`\n\nAvailable servers:\n` {availableServers} `')
 
-    serverData = await settings.getData(f'https://api.battlemetrics.com/servers/{server}', params=None, capture_message=capture_message)
+    serverData = await utility.getData(f'https://api.battlemetrics.com/servers/{server}', params=None, capture_message=capture_message)
         
     if serverData is None:
         return await client.say(f'An error has occured, please contact {author}')
     
     else:
-        playerData = await settings.getData('https://api.battlemetrics.com/players', params={'filter[servers]':server, 
+        playerData = await utility.getData('https://api.battlemetrics.com/players', params={'filter[servers]':server, 
             'filter[online]':'true', 'page[size]':serverData['data']['attributes']['maxPlayers']}, capture_message=capture_message)
-        embed = await settings.embify(serverData, playerData, discord.Embed, capture_message)
+        embed = await utility.embify(serverData, playerData, discord.Embed, capture_message)
         return await client.say(embed=embed)
 
 async def server_updateLogic(ctx, operation, serverNumber, serverId):
@@ -60,7 +59,7 @@ async def server_updateLogic(ctx, operation, serverNumber, serverId):
         return
         
     serverlistDb = db.collection('serverlist').document(str(ctx.message.channel.id))
-    await settings.checkDb(db, serverlistDb, ctx, firestore)
+    await utility.checkDb(db, serverlistDb, ctx, firestore)
     usageMessage = 'Usage:\n\n`!serverconfig update [server number] [battlmetrics server id]\n!serverconfig delete [server number]`'
 
     if operation == 'delete':
@@ -82,6 +81,7 @@ async def server_updateLogic(ctx, operation, serverNumber, serverId):
         
 @client.event
 async def on_ready():
+    print (f'APX Bot Running on {runtime} mode.')
     print('Logged in as')
     print(client.user.name)
     print(client.user.id)
@@ -118,6 +118,16 @@ async def serverconfig(ctx, operation:str=None, serverNumber:int=None, serverId:
         'Server ID': serverId,
     })
 if __name__ == '__main__':
-    author = keys['authorId']
-    client.run(keys['discordToken'])
+    if len(sys.argv) < 2:
+        print ('Usage: python3 main.py [runtime]')
+        sys.exit()
 
+    author = keys['authorId']
+    discordKey = keys['discordToken']
+    runtime = sys.argv[1]
+    
+    if runtime == 'dev':
+        discordKey = keys['discordToken_dev']
+
+    channelList = utility.retrieveDb_data(db, option='channellist', title=runtime)
+    client.run(discordKey)

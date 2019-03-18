@@ -14,4 +14,4 @@ COPY . /app
 
 ENV PORT 8080
 
-CMD ["python", "main.py"]
+CMD ["python", "main.py", "prod"]

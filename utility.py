@@ -46,13 +46,13 @@ async def embify(serverData, playerData, discordEmbed, capture_message):
 
     return embed
 
-def retrieveData(db, option, title):
+def retrieveDb_data(db, option, title):
     data_ref = db.collection(option).document(title)
     docs = data_ref.get()
     return docs.to_dict()   
 
 async def checkDb(db, serverlistDb, ctx, firestore):
-    serverList = retrieveData(db, option='serverlist', title=ctx.message.channel.id)
+    serverList = retrieveDb_data(db, option='serverlist', title=ctx.message.channel.id)
     if serverList is None:
         data = {'create':'create'}
         serverlistDb.set(data)
