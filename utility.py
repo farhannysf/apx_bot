@@ -51,12 +51,21 @@ def retrieveDb_data(db, option, title):
     docs = data_ref.get()
     return docs.to_dict()   
 
-async def checkDb(db, serverlistDb, ctx, firestore):
-    serverList = retrieveDb_data(db, option='serverlist', title=ctx.message.channel.id)
-    if serverList is None:
+async def checkDb(db, objectList, objectDb, firestore):
+    if objectList is None:
         data = {'create':'create'}
-        serverlistDb.set(data)
-        serverlistDb.update({'create':firestore.DELETE_FIELD})
+        objectDb.set(data)
+        objectDb.update({'create':firestore.DELETE_FIELD})
         return
+
+async def checkChannel(db, firestore, channelList, channelId, guildId):
+
+    channellist_Db = db.collection('channellist').document(str(guildId))
+    await checkDb(db, channelList, channellist_Db, firestore)
+    try:
+        channelVerify = retrieveDb_data(db, option='channellist', title=guildId)[f'{channelId}']
+    except KeyError:
+        return
+    return channelVerify
 
 load_dotenv(find_dotenv())
