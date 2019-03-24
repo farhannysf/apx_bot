@@ -13,35 +13,35 @@ Display help message.
 
 ![Alt Text](https://github.com/farhannysf/apx_bot/blob/master/docs/apxhelp.gif)
 
-
 ### !channelconfig
 Authorize or revoke bot access to channels.
 
-`!channelconfig authorize #example-channel`
-
+###### `!channelconfig authorize #example-channel`
 Authorize bot access to #example-channel.
 
-`!channelconfig revoke #example-channel`
-
+###### `!channelconfig revoke #example-channel`
 Revoke bot access to #example-channel.
 
 ![Alt Text](https://github.com/farhannysf/apx_bot/blob/master/docs/channelconfig.gif)
 
-
 ### !serverconfig
 Assign or remove ArmA 3 servers on Battlemetrics to the bot.
 
-!serverconfig update [name] [battlemetrics id]
+###### `!serverconfig update [name] [battlemetrics id]`
 Assign a name to the respective server using Battlemetrics ID and save it to the bot.
 
-!serverconfig delete [name]
+###### `!serverconfig delete [name]`
 Remove saved server from the bot by the assigned name.
 
-• !serverstats
+![Alt Text](https://github.com/farhannysf/apx_bot/blob/master/docs/serverconfig.gif)
+
+### !serverstats
 Check status of saved server.
 
-!serverstats [name]
+###### !serverstats [name]
 Check status of a server by the assigned name.
+
+![Alt Text](https://github.com/farhannysf/apx_bot/blob/master/docs/channelconfig.gif)
 
 # Sites/Tools used
 
