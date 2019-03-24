@@ -7,9 +7,41 @@ This project is made to improve players convenience and reduce time spent when c
 # Features
 The bot is actively hosted on APX Discord guild. It is able to show current mission, number of players and active players list on a server when !serverstats command is invoked by a user. Channel authorization can be managed by authorized users through !channelconfig command. Respectively, server list can also be managed by authorized users through !serverconfig command. The bot is also containerized using Docker to provide more portability in deployment. It is using Sentry for logging and error tracking, Segment with Amplitude integration for analytics and Google Cloud Firestore to store channel, server list and configuration variables. There are two available runtime modes, each accomodates for production and development purpose.
 
-### Usage example
+# Usage
+### !apxhelp
+Display help message.
 
-![Alt Text](https://github.com/farhannysf/apx_bot/blob/master/docs/apxbot.gif)
+![Alt Text](https://github.com/farhannysf/apx_bot/blob/master/docs/apxhelp.gif)
+
+
+### !channelconfig
+Authorize or revoke bot access to channels.
+
+`!channelconfig authorize #example-channel`
+
+Authorize bot access to #example-channel.
+
+`!channelconfig revoke #example-channel`
+
+Revoke bot access to #example-channel.
+
+![Alt Text](https://github.com/farhannysf/apx_bot/blob/master/docs/channelconfig.gif)
+
+
+### !serverconfig
+Assign or remove ArmA 3 servers on Battlemetrics to the bot.
+
+!serverconfig update [name] [battlemetrics id]
+Assign a name to the respective server using Battlemetrics ID and save it to the bot.
+
+!serverconfig delete [name]
+Remove saved server from the bot by the assigned name.
+
+• !serverstats
+Check status of saved server.
+
+!serverstats [name]
+Check status of a server by the assigned name.
 
 # Sites/Tools used
 
