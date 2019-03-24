@@ -69,7 +69,7 @@ async def serverconfig(ctx, operation:str=None, serverTitle:str=None, serverId:i
         'Guild name': ctx.message.server.name,
         'Operation': operation,
         'Server name': serverTitle,
-        'Server ID': serverId,
+        'Server ID': serverId
     })
 
 @client.command(pass_context=True)
@@ -88,7 +88,7 @@ async def channelconfig(ctx, operation:str=None, channel:str=None):
         'Guild ID': guildId,
         'Guild name': ctx.message.server.name,
         'Operation': operation,
-        'Channel set': channel,
+        'Channel set': channel
     })
 
 @client.command(pass_context=True)
@@ -110,8 +110,19 @@ async def apxhelp(ctx):
             '`!serverconfig delete [name]`\nRemove server from the bot by the assigned name.\n\n• **!serverstats**\nCheck status of saved server.\n\n'
             f'`!serverstats [name]`\nCheck status of a server by the assigned name.\n\nContact {author} for more support.')
 
-        return await client.say(helpMessage)
-    
+        await client.say(helpMessage)
+        
+        analytics.track(ctx.message.author.id, 'Help Request', {
+            'User ID': ctx.message.author.id,
+            'Username': ctx.message.author.name,
+            'Channel ID': channelId,
+            'Channel name': ctx.message.channel.name,
+            'Guild ID': guildId,
+            'Guild name': ctx.message.server.name
+        })
+        
+        return
+
     return await client.say('`This channel is not authorized. Use !channelconfig to authorize channels.`')
     
 if __name__ == '__main__':
