@@ -8,6 +8,7 @@ async def server_configLogic(client, firestore, db, channelId, guildId, operatio
         serverList = utility.retrieveDb_data(db, option='serverlist', title=guildId)
         serverlistDb = db.collection('serverlist').document(str(guildId))
         await utility.checkDb(db, serverList, serverlistDb,firestore)
+        
         usageMessage = '**Usage:**\n\n`!serverconfig update [server name] [battlmetrics server id]\n!serverconfig delete [server name]`'
 
         if operation == 'delete':
@@ -20,6 +21,7 @@ async def server_configLogic(client, firestore, db, channelId, guildId, operatio
         if operation == 'update':
             if serverTitle is None or serverId is None:
                 return await client.say(usageMessage)
+            
             data = {str(serverTitle):str(serverId)}
             serverlistDb.update(data)
             return await client.say(f'**Updated server list.**\n `Server {serverTitle} (Battlemetrics ID: {serverId})`')

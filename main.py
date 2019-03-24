@@ -33,13 +33,14 @@ async def on_ready():
     print(client.user.name)
     print(client.user.id)
     print('------')
+    await client.change_presence(game=discord.Game(name='!apxhelp', type=2))
 
 @client.command(pass_context=True)
 async def serverstats(ctx, serverTitle:str=None):
     channelId = ctx.message.channel.id
     guildId = ctx.message.server.id
 
-    await apx_commands.serverstats.server_statsLogic(client, firestore, db, channelId, guildId, serverTitle, discord.Embed)
+    await apx_commands.serverstats.server_statsLogic(client, firestore, db, author, channelId, guildId, serverTitle, discord.Embed)
 
     analytics.track(ctx.message.author.id, 'Server Info Request', {
         'User ID': ctx.message.author.id,

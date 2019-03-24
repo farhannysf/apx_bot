@@ -1,12 +1,11 @@
 import utility
 from sentry_sdk import capture_message
 
-async def server_statsLogic(client, firestore, db, channelId, guildId, serverTitle, discordEmbed):
+async def server_statsLogic(client, firestore, db, author, channelId, guildId, serverTitle, discordEmbed):
     channelList = utility.retrieveDb_data(db, option='channellist', title=guildId)
     channelVerify = await utility.checkChannel(db, firestore, channelList, channelId, guildId)
     
     if channelVerify:
-        
         serverList = utility.retrieveDb_data(db, option='serverlist', title=guildId)
         
         if serverList is None:

@@ -16,6 +16,7 @@ async def getData(url, params, capture_message):
     if response.status == 200:
         data = await response.json()
         return data    
+    
     else:
         capture_message(f'Battlemetrics API: {response.status}')
     
@@ -59,7 +60,6 @@ async def checkDb(db, objectList, objectDb, firestore):
         return
 
 async def checkChannel(db, firestore, channelList, channelId, guildId):
-
     channellist_Db = db.collection('channellist').document(str(guildId))
     await checkDb(db, channelList, channellist_Db, firestore)
     try:
