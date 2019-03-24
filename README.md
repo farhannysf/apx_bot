@@ -41,7 +41,7 @@ Check status of saved server.
 ###### !serverstats [name]
 Check status of a server by the assigned name.
 
-![Alt Text](https://github.com/farhannysf/apx_bot/blob/master/docs/channelconfig.gif)
+![Alt Text](https://github.com/farhannysf/apx_bot/blob/master/docs/serverstats.gif)
 
 # Sites/Tools used
 
