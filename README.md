@@ -38,7 +38,7 @@ Remove saved server from the bot by the assigned name.
 ### !serverstats
 Check status of saved server.
 
-###### !serverstats [name]
+###### `!serverstats [name]`
 Check status of a server by the assigned name.
 
 ![Alt Text](https://github.com/farhannysf/apx_bot/blob/master/docs/serverstats.gif)
