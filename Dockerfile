@@ -14,4 +14,6 @@ COPY . /app
 
 ENV PORT 1337
 
+EXPOSE 1337
+
 CMD ["python", "main.py", "prod"]
