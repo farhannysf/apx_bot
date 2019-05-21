@@ -2,6 +2,7 @@ asyncio
 aiohttp
 python-dotenv
 discord.py
+sanic
 sentry-sdk
 analytics-python
 google-cloud-firestore

@@ -1,4 +1,4 @@
-FROM python:3.6
+FROM python:3.7
 
 WORKDIR /app
 
@@ -12,6 +12,6 @@ RUN pip install -r requirements.txt
 
 COPY . /app
 
-ENV PORT 8080
+ENV PORT 1337
 
 CMD ["python", "main.py", "prod"]

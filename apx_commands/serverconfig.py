@@ -1,6 +1,6 @@
 import utility
 
-async def server_configLogic(client, firestore, db, channelId, guildId, operation, serverTitle, serverId):
+async def server_configLogic(ctx, firestore, db, channelId, guildId, operation, serverTitle, serverId):
     channelList = utility.retrieveDb_data(db, option='channellist', title=guildId)
     channelVerify = await utility.checkChannel(db, firestore, channelList, channelId, guildId)
 
@@ -13,20 +13,20 @@ async def server_configLogic(client, firestore, db, channelId, guildId, operatio
 
         if operation == 'delete':
             if serverTitle is None: 
-                return await client.say(usageMessage)
+                return await ctx.send(usageMessage)
             data = {str(serverTitle): firestore.DELETE_FIELD}
             serverlistDb.update(data)
-            return await client.say(f'**Updated server list.**\n `Deleted Server {serverTitle}`')
+            return await ctx.send(f'**Updated server list.**\n `Deleted Server {serverTitle}`')
 
         if operation == 'update':
             if serverTitle is None or serverId is None:
-                return await client.say(usageMessage)
+                return await ctx.send(usageMessage)
             
             data = {str(serverTitle):str(serverId)}
             serverlistDb.update(data)
-            return await client.say(f'**Updated server list.**\n `Server {serverTitle} (Battlemetrics ID: {serverId})`')
+            return await ctx.send(f'**Updated server list.**\n `Server {serverTitle} (Battlemetrics ID: {serverId})`')
         
         else:
-            return await client.say(usageMessage)
+            return await ctx.send(usageMessage)
     else:
-        return await client.say('`This channel is not authorized. Use !channelconfig to authorize channels.`')
+        return await ctx.send('`This channel is not authorized. Use !channelconfig to authorize channels.`')

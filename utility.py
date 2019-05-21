@@ -10,6 +10,13 @@ async def asyncGet(*args, **kwargs):
 
             return response
 
+async def asyncPost(*args, **kwargs):
+    async with aiohttp.ClientSession() as client:
+        async with client.post(*args, **kwargs) as response:
+            response.body = await response.read()
+
+            return response
+
 async def getData(url, params, capture_message):
     response = await asyncGet(url, params=params)
     

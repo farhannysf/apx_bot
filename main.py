@@ -5,6 +5,7 @@ import utility
 import logging
 import sentry_sdk
 import analytics
+import webserver
 
 import apx_commands.serverstats
 import apx_commands.serverconfig
@@ -12,6 +13,7 @@ import apx_commands.channelconfig
 
 from discord.ext import commands
 from google.cloud import firestore
+from sentry_sdk import capture_message
 
 client = commands.Bot(command_prefix='!')
 
@@ -28,19 +30,21 @@ analytics.write_key = keys['segmentKey']
 
 @client.event
 async def on_ready():
+    client.loop.create_task(webserver.sanic_webserver(client, keys, capture_message))
     print (f'APX Bot Running on {runtime} mode.')
     print('Logged in as')
     print(client.user.name)
     print(client.user.id)
     print('------')
-    await client.change_presence(game=discord.Game(name='!apxhelp', type=2))
+    game = discord.Game("!apxhelp")
+    await client.change_presence(status=discord.Status.online, activity=game)
 
 @client.command(pass_context=True)
 async def serverstats(ctx, serverTitle:str=None):
-    channelId = ctx.message.channel.id
-    guildId = ctx.message.server.id
+    channelId = str(ctx.message.channel.id)
+    guildId = str(ctx.message.guild.id)
 
-    await apx_commands.serverstats.server_statsLogic(client, firestore, db, author, channelId, guildId, serverTitle, discord.Embed)
+    await apx_commands.serverstats.server_statsLogic(ctx, firestore, db, author, channelId, guildId, serverTitle, discord.Embed, capture_message)
 
     analytics.track(ctx.message.author.id, 'Server Info Request', {
         'User ID': ctx.message.author.id,
@@ -48,17 +52,17 @@ async def serverstats(ctx, serverTitle:str=None):
         'Channel ID': channelId,
         'Channel name': ctx.message.channel.name,
         'Guild ID': guildId,
-        'Guild name': ctx.message.server.name,
+        'Guild name': ctx.message.guild.name,
         'Server name': serverTitle
     })
 
 @client.command(pass_context=True)
 @commands.has_permissions(manage_messages=True)
 async def serverconfig(ctx, operation:str=None, serverTitle:str=None, serverId:int=None):
-    channelId = ctx.message.channel.id
-    guildId = ctx.message.server.id
+    channelId = str(ctx.message.channel.id)
+    guildId = str(ctx.message.guild.id)
 
-    await apx_commands.serverconfig.server_configLogic(client, firestore, db, channelId, guildId, operation, serverTitle, serverId)
+    await apx_commands.serverconfig.server_configLogic(ctx, firestore, db, channelId, guildId, operation, serverTitle, serverId)
 
     analytics.track(ctx.message.author.id, 'Server List Config Request', {
         'User ID': ctx.message.author.id,
@@ -66,7 +70,7 @@ async def serverconfig(ctx, operation:str=None, serverTitle:str=None, serverId:i
         'Channel ID': channelId,
         'Channel name': ctx.message.channel.name,
         'Guild ID': guildId,
-        'Guild name': ctx.message.server.name,
+        'Guild name': ctx.message.guild.name,
         'Operation': operation,
         'Server name': serverTitle,
         'Server ID': serverId
@@ -75,10 +79,10 @@ async def serverconfig(ctx, operation:str=None, serverTitle:str=None, serverId:i
 @client.command(pass_context=True)
 @commands.has_permissions(manage_messages=True)
 async def channelconfig(ctx, operation:str=None, channel:str=None):
-    channelId = ctx.message.channel.id
-    guildId = ctx.message.server.id
+    channelId = str(ctx.message.channel.id)
+    guildId = str(ctx.message.guild.id)
 
-    await apx_commands.channelconfig.channel_configLogic(client, firestore, db, channelId, guildId, operation, channel)
+    await apx_commands.channelconfig.channel_configLogic(ctx, firestore, db, channelId, guildId, operation, channel)
 
     analytics.track(ctx.message.author.id, 'Channel List Config Request', {
         'User ID': ctx.message.author.id,
@@ -86,15 +90,15 @@ async def channelconfig(ctx, operation:str=None, channel:str=None):
         'Channel ID': channelId,
         'Channel name': ctx.message.channel.name,
         'Guild ID': guildId,
-        'Guild name': ctx.message.server.name,
+        'Guild name': ctx.message.guild.name,
         'Operation': operation,
         'Channel set': channel
     })
 
 @client.command(pass_context=True)
 async def apxhelp(ctx):
-    channelId = ctx.message.channel.id
-    guildId = ctx.message.server.id
+    channelId = str(ctx.message.channel.id)
+    guildId = str(ctx.message.guild.id)
 
     channelList = utility.retrieveDb_data(db, option='channellist', title=guildId)
     channelVerify = await utility.checkChannel(db, firestore, channelList, channelId, guildId)
@@ -110,7 +114,7 @@ async def apxhelp(ctx):
             '`!serverconfig delete [name]`\nRemove saved server from the bot by the assigned name.\n\n• **!serverstats**\nCheck status of saved server.\n\n'
             f'`!serverstats [name]`\nCheck status of a server by the assigned name.\n\nContact {author} for more support.')
 
-        await client.say(helpMessage)
+        await ctx.send(helpMessage)
         
         analytics.track(ctx.message.author.id, 'Help Request', {
             'User ID': ctx.message.author.id,
@@ -118,23 +122,30 @@ async def apxhelp(ctx):
             'Channel ID': channelId,
             'Channel name': ctx.message.channel.name,
             'Guild ID': guildId,
-            'Guild name': ctx.message.server.name
+            'Guild name': ctx.message.guild.name
         })
         
         return
 
-    return await client.say('`This channel is not authorized. Use !channelconfig to authorize channels.`')
-    
+    return await ctx.send('`This channel is not authorized. Use !channelconfig to authorize channels.`')
+
+
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print ('Usage: python3 main.py [runtime]')
+        print ('Usage: python main.py [runtime]')
         sys.exit()
 
     author = keys['authorId']
-    discordKey = keys['discordToken']
     runtime = sys.argv[1]
+
+    if runtime == 'prod':
+        discordKey = keys['discordToken']
     
-    if runtime == 'dev':
+    elif runtime == 'dev':
         discordKey = keys['discordToken_dev']
+    
+    else:
+        print ('Usage: python main.py [runtime]')
+        sys.exit()
 
     client.run(discordKey)
