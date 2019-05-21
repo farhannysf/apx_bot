@@ -21,17 +21,17 @@ async def sanic_webserver(client, keys, capture_message):
                 link = payload['link']
                 adsStatus = {"status": "Success"}
                 
+                channel = client.get_channel(int(channelPayload))
+                offer_message = f'**{title}**: *{discount} OFF*\n{currency} ~~{originalPrice}~~ **{exodealPrice}**'
+                await channel.send('**KEG THE MERCHANT OFFERS YOU A DEAL**')
+                await channel.send(file=File('assets/keg.png'))
+                await channel.send(offer_message)
+                await channel.send(link)
+            
             except Exception as e:
                 capture_message(f'Ads Status: {e}')
                 return json({'status':'An internal error have occured'})
 
-            channel = client.get_channel(int(channelPayload))
-            offer_message = f'**{title}**: *{discount} OFF*\n{currency} ~~{originalPrice}~~ **{exodealPrice}**'
-            await channel.send('**KEG THE MERCHANT OFFERS YOU A DEAL**')
-            await channel.send(file=File('assets/keg.png'))
-            await channel.send(offer_message)
-            await channel.send(link)
-            
             return json(adsStatus)
         
         else:
