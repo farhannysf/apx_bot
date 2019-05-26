@@ -75,4 +75,10 @@ async def checkChannel(db, firestore, channelList, channelId, guildId):
         return
     return channelVerify
 
+async def search_resultFormat(serverData):
+    serverProperties = {i['attributes']['name']:i['attributes']['id'] for i in serverData['data']}
+    searchResult = '\n\n'.join('{} >> [{}]'.format(key, value) for key, value in serverProperties.items())
+    search_resultMessage = f'**Server name >> [Battlemetrics ID]**\n```{searchResult}```'
+    return search_resultMessage
+
 load_dotenv(find_dotenv())

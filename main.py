@@ -8,6 +8,7 @@ import analytics
 import webserver
 
 import apx_commands.serverstats
+import apx_commands.serversearch
 import apx_commands.serverconfig
 import apx_commands.channelconfig
 
@@ -45,6 +46,23 @@ async def serverstats(ctx, serverTitle:str=None):
     guildId = str(ctx.message.guild.id)
 
     await apx_commands.serverstats.server_statsLogic(ctx, firestore, db, author, channelId, guildId, serverTitle, discord.Embed, capture_message)
+
+    analytics.track(ctx.message.author.id, 'Server Info Request', {
+        'User ID': ctx.message.author.id,
+        'Username': ctx.message.author.name,
+        'Channel ID': channelId,
+        'Channel name': ctx.message.channel.name,
+        'Guild ID': guildId,
+        'Guild name': ctx.message.guild.name,
+        'Server name': serverTitle
+    })
+
+@client.command(pass_context=True)
+async def serversearch(ctx, serverTitle:str=None):
+    channelId = str(ctx.message.channel.id)
+    guildId = str(ctx.message.guild.id)
+
+    await apx_commands.serversearch.server_searchLogic(ctx, firestore, db, author, channelId, guildId, serverTitle, capture_message)
 
     analytics.track(ctx.message.author.id, 'Server Info Request', {
         'User ID': ctx.message.author.id,
@@ -112,7 +130,8 @@ async def apxhelp(ctx):
             'Assign or remove ArmA 3 servers on Battlemetrics to the bot.\n\n'
             '`!serverconfig update [name] [battlemetrics id]`\nAssign a name to the respective server using Battlemetrics ID and save it to the bot.\n\n'
             '`!serverconfig delete [name]`\nRemove saved server from the bot by the assigned name.\n\n• **!serverstats**\nCheck status of saved server.\n\n'
-            f'`!serverstats [name]`\nCheck status of a server by the assigned name.\n\nContact {author} for more support.')
+            f'`!serverstats [name]`\nCheck status of a server by the assigned name. Assigned name must not include any space.\n\n• **!serversearch**\nSearch for ArmA 3 servers Battlemetrics ID.\n\n'
+            f'`!serversearch "server name"`\nSearch for Battlemetrics ID by server name.\n\nContact {author} for more support.')
 
         await ctx.send(helpMessage)
         
