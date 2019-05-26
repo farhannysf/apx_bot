@@ -46,7 +46,7 @@ Check status of a server by the assigned name.
 ### !serversearch
 Search for ArmA 3 servers Battlemetrics ID.
 
-###### `!serversearch "name"`
+###### `!serversearch "server name"`
 Search for Battlemetrics ID by server name.
 
 ![Alt Text](https://github.com/farhannysf/apx_bot/blob/master/docs/serversearch.gif)
