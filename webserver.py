@@ -8,18 +8,18 @@ async def sanic_webserver(client, keys, capture_message):
 
     @app.route("/ads", methods=["POST"])
     async def post_ads(request):
-        payload = request.json
+        payload = request.form
 
         if payload.get('secret') == keys['ads']:
             try:
-                channelPayload = payload['channelPayload']
-                title = payload['title']
-                currency = payload['currency']
-                originalPrice = payload['retail_price']
-                exodealPrice = payload['best_price']
-                discount = payload['discount']
-                link = payload['link']
-                adsStatus = {"status": "Success"}
+                channelPayload = payload.get('channelPayload')
+                title = payload.get('title')
+                currency = payload.get('currency')
+                originalPrice = payload.get('retail_price')
+                exodealPrice = payload.get('best_price')
+                discount = payload.get('discount')
+                link = payload.get('link')
+                adsStatus = {"status": f"Success, payload sent to {channelPayload}"}
                 
                 channel = client.get_channel(int(channelPayload))
                 offer_message = f'**{title}**: *{discount} OFF*\n{currency} ~~{originalPrice}~~ **{exodealPrice}**'
