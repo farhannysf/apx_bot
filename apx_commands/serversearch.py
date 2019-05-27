@@ -29,7 +29,7 @@ async def server_searchLogic(ctx, firestore, db, author, channelId, guildId, ser
                     except KeyError:
                         break
 
-                    await ctx.send('Send "!nextsearch" to browse more or send "!quitsearch" to quit.')
+                    await ctx.send('===\n**Send "!nextsearch" to browse more or send "!quitsearch" to quit.**')
                     msg = await ctx.bot.wait_for('message', check=check)
 
                     if msg.content == '!quitsearch':
@@ -40,7 +40,7 @@ async def server_searchLogic(ctx, firestore, db, author, channelId, guildId, ser
                         searchResult = await utility.search_resultFormat(serverData)
                         await ctx.send(searchResult)
 
-            return await ctx.send('Search completed.')
+            return await ctx.send('===\nSearch completed.')
 
     else:
         return await ctx.send('`This channel is not authorized. Use !channelconfig to authorize channels.`')
