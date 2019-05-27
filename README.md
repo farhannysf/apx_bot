@@ -57,6 +57,7 @@ Search for Battlemetrics ID by server name.
 * [aiohttp](https://docs.aiohttp.org/en/stable/)
 * [asyncio](https://docs.python.org/3.6/library/asyncio.html)
 * [discord.py](https://discordpy.readthedocs.io/en/latest/)
+* [sanic](https://sanic.readthedocs.io/en/latest/)
 * [python-dotenv](https://github.com/theskumar/python-dotenv)
 * [sentry-sdk](https://docs.sentry.io/error-reporting/quickstart/?platform=python)
 * [analytics-python](https://segment.com/docs/sources/server/python/)
