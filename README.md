@@ -27,6 +27,8 @@ Revoke bot access to #example-channel.
 ### !serverconfig
 Assign or remove ArmA 3 servers on Battlemetrics to the bot.
 
+Assigned name must not include any space or special character.
+
 ###### `!serverconfig update [name] [battlemetrics id]`
 Assign a name to the respective server using Battlemetrics ID and save it to the bot.
 
