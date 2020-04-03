@@ -103,6 +103,11 @@ async def serverconfig(ctx, operation:str=None, serverTitle:str=None, serverId:i
         'Server ID': serverId
     })
 
+@serverconfig.error
+async def serverconfig_error(ctx, error):
+    if isinstance(error, commands.MissingPermissions):
+        await ctx.send('You have no sufficient permission in this guild to use this command. Please contact guild administrator.')
+
 @client.command(pass_context=True)
 @commands.has_permissions(manage_messages=True)
 async def channelconfig(ctx, operation:str=None, channel:str=None):
@@ -121,6 +126,11 @@ async def channelconfig(ctx, operation:str=None, channel:str=None):
         'Operation': operation,
         'Channel set': channel
     })
+
+@channelconfig.error
+async def channelconfig_error(ctx, error):
+    if isinstance(error, commands.MissingPermissions):
+        await ctx.send('You have no sufficient permission in this guild to use this command. Please contact guild administrator.')
 
 @client.command(pass_context=True)
 async def apxhelp(ctx):
