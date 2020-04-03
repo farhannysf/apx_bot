@@ -12,7 +12,7 @@ RUN pip install -r requirements.txt
 
 COPY . /app
 
-ENV PORT 1337
+ENV PORT=1337 GOOGLE_APPLICATION_CREDENTIALS="key.json"
 
 EXPOSE 1337
 
