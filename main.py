@@ -19,7 +19,16 @@ from sentry_sdk import capture_message
 client = commands.Bot(command_prefix='!')
 
 # Initiate Google Cloud Firestore
-db = firestore.Client()
+try:
+    db = firestore.Client()
+except Exception as e:
+    credentialError_string = 'Could not automatically determine credentials. Please set GOOGLE_APPLICATION_CREDENTIALS or explicitly create credentials and re-run the application. For more information, please see https://cloud.google.com/docs/authentication/getting-started'
+    if str(e) == credentialError_string:
+        print(f'## INVALID CREDENTIALS ##\n\n{credentialError_string}\n\nContact fynugroho@exoduspi.org to be issued the respective Google Cloud Platform credentials to run this software.')
+    else:
+        print(e)
+    sys.exit()
+
 keys = utility.retrieveDb_data(db, option='keys', title='api')
  
 # Initiate logging and sentry
