@@ -36,6 +36,7 @@ async def embify(serverData, playerData, discordEmbed, capture_message):
         players = '\n'.join(playerList)
 
     serverName = serverData['data']['attributes']['name']
+    serverIP = serverData['data']['attributes']['ip']
     serverStats = serverData['data']['attributes']['status']
     serverMission = serverData['data']['attributes']['details']['mission']
     activePlayer = serverData['data']['attributes']['players']
@@ -45,6 +46,7 @@ async def embify(serverData, playerData, discordEmbed, capture_message):
     embed.set_thumbnail(url='https://units.arma3.com/groups/img/32641/06EvpC7yf0.png')
     
     if serverStats == 'online':
+        embed.add_field(name="IP Address", value=serverIP, inline=True)
         embed.add_field(name="Mission", value=serverMission, inline=True)
         embed.add_field(name="Players", value=f'{activePlayer}/{maxPlayer}', inline=True)
         embed.add_field(name="Active Players", value=players, inline=False)
