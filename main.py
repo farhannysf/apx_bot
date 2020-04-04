@@ -105,8 +105,18 @@ async def serverconfig(ctx, operation:str=None, serverTitle:str=None, serverId:i
 
 @serverconfig.error
 async def serverconfig_error(ctx, error):
+    valueError = "Command raised an exception: ValueError"
+    
     if isinstance(error, commands.MissingPermissions):
         await ctx.send('You have no sufficient permission in this guild to use this command. Please contact guild administrator.')
+    
+    if str(error)[0:39] == valueError:
+        await ctx.send('Assigned name must not include any space or special character.')
+    
+    else:
+        capture_message(error)
+
+
 
 @client.command(pass_context=True)
 @commands.has_permissions(manage_messages=True)
@@ -131,6 +141,10 @@ async def channelconfig(ctx, operation:str=None, channel:str=None):
 async def channelconfig_error(ctx, error):
     if isinstance(error, commands.MissingPermissions):
         await ctx.send('You have no sufficient permission in this guild to use this command. Please contact guild administrator.')
+
+    else:
+        capture_message(error)
+
 
 @client.command(pass_context=True)
 async def apxhelp(ctx):
