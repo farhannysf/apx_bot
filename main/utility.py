@@ -28,6 +28,13 @@ async def getData(url, params, capture_message):
         capture_message(f'Battlemetrics API: {response.status}')
     
 async def embify(serverData, playerData, discordEmbed, capture_message):
+    if not playerData['data']:
+        players = 'No active players.'
+
+    else:
+        playerList = [item['attributes']['name'] for item in playerData['data']]
+        players = '\n'.join(playerList)
+        
     serverName = serverData['data']['attributes']['name']
     serverIP = serverData['data']['attributes']['ip']
     serverStats = serverData['data']['attributes']['status']
@@ -36,12 +43,14 @@ async def embify(serverData, playerData, discordEmbed, capture_message):
     maxPlayer = serverData['data']['attributes']['maxPlayers']
     
     embed = discordEmbed(title=serverName, description=serverStats.title(), color=0x00ff00)
-    embed.set_thumbnail(url='https://units.arma3.com/groups/img/32641/06EvpC7yf0.png')
+    embed.set_thumbnail(url='https://units.arma3.com/groups/img/165841/ZU3SH51cXb.png')
     
     if serverStats == 'online':
         embed.add_field(name="IP Address", value=serverIP, inline=True)
         embed.add_field(name="Mission", value=serverMission, inline=True)
         embed.add_field(name="Players", value=f'{activePlayer}/{maxPlayer}', inline=True)
+        embed.add_field(name="Active Players", value=players, inline=False)
+
     
     elif serverStats == 'dead' or serverStats == 'removed':
         capture_message(f'{serverName} is {serverStats}')
@@ -61,10 +70,10 @@ async def checkDb(db, objectList, objectDb, firestore):
         return
 
 async def checkChannel(db, firestore, channelList, channelId, guildId):
-    channellist_Db = db.collection('channellist').document(str(guildId))
+    channellist_Db = db.collection('channel-list').document(str(guildId))
     await checkDb(db, channelList, channellist_Db, firestore)
     try:
-        channelVerify = retrieveDb_data(db, option='channellist', title=guildId)[f'{channelId}']
+        channelVerify = retrieveDb_data(db, option='channel-list', title=guildId)[f'{channelId}']
     except KeyError:
         return
     return channelVerify

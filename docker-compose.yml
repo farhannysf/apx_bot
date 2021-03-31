@@ -1,0 +1,5 @@
+services:
+  main:
+    build: main  
+    restart: always
+    env_file: .env

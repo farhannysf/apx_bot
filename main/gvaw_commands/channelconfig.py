@@ -2,14 +2,14 @@ import re
 import utility
 
 async def channel_configLogic(ctx, firestore, db, channelId, guildId, operation, channel):
-    channelList = utility.retrieveDb_data(db, option='channellist', title=guildId)
+    channelList = utility.retrieveDb_data(db, option='channel-list', title=guildId)
     await utility.checkChannel(db, firestore, channelList, channelId, guildId)
-    authorizedChannels = '\n'.join('<#{}>'.format(key) for key, value in utility.retrieveDb_data(db, option='channellist', title=guildId).items())
+    authorizedChannels = '\n'.join('<#{}>'.format(key) for key, value in utility.retrieveDb_data(db, option='channel-list', title=guildId).items())
 
-    usageMessage = f'**Usage:**\n\n`!channelconfig authorize [#channel]`\n`!channelconfig revoke [#channel]`\n\n**Authorized Channels:**\n\n{authorizedChannels}'
+    usageMessage = f'**Usage:**\n\n`!channelconfig authorize #channel`\n`!channelconfig revoke #channel`\n\n**Authorized Channels:**\n\n{authorizedChannels}'
     if operation:
         if channel:
-            channellist_Db = db.collection('channellist').document(str(guildId))
+            channellist_Db = db.collection('channel-list').document(str(guildId))
 
             try:
                 channelSelect = int(re.search(r'\d+', channel).group())

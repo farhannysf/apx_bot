@@ -1,4 +1,4 @@
-# [APX] Bot
+# [GVAW] Bot
 A simple Discord bot to check for ArmA 3 server status.
 
 # About
@@ -8,7 +8,7 @@ This project is made to improve players convenience and reduce time spent when c
 The bot is able to show current mission, number of players and active players list on a server when !serverstats command is invoked by a user. Users can browse through the list of servers on Battlemetrics by server name to retrieve the server ID. Channel authorization can be managed by authorized users through !channelconfig command. Respectively, server list can also be managed by authorized users through !serverconfig command. The bot is also containerized using Docker to provide more portability in deployment. It is using Sentry for logging and error tracking, Segment with Amplitude integration for analytics and Google Cloud Firestore to store channel, server list and configuration variables. There are two available runtime modes, each accomodates for production and development purpose.
 
 # Usage
-### !apxhelp
+### !gvawhelp
 Display help message.
 
 ![Alt Text](https://github.com/farhannysf/apx_bot/blob/master/docs/apxhelp.gif)

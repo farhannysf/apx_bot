@@ -1,14 +1,14 @@
 import utility
 
 async def server_searchLogic(ctx, firestore, db, author, channelId, guildId, serverTitle, capture_message):
-    channelList = utility.retrieveDb_data(db, option='channellist', title=guildId)
+    channelList = utility.retrieveDb_data(db, option='channel-list', title=guildId)
     channelVerify = await utility.checkChannel(db, firestore, channelList, channelId, guildId)
 
     if channelVerify:
         try:
             serverData = await utility.getData(f'https://api.battlemetrics.com/servers', params={'filter[search]':serverTitle, 'filter[game]':'arma3'}, capture_message=capture_message)
         except TypeError:
-            return await ctx.send(f'**Usage:**\n\n`!serversearch "server name"`')
+            return await ctx.send(f'**Usage:**\n\n`!serversearch [server name]`')
             
         if serverData is None:
             return await ctx.send(f'An error has occured, please contact {author}')

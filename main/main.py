@@ -5,12 +5,11 @@ import utility
 import logging
 import sentry_sdk
 import analytics
-import webserver
 
-import apx_commands.serverstats
-import apx_commands.serversearch
-import apx_commands.serverconfig
-import apx_commands.channelconfig
+import gvaw_commands.serverstats
+import gvaw_commands.serversearch
+import gvaw_commands.serverconfig
+import gvaw_commands.channelconfig
 
 from discord.ext import commands
 from google.cloud import firestore
@@ -24,7 +23,7 @@ try:
 except Exception as e:
     credentialError_string = 'Could not automatically determine credentials. Please set GOOGLE_APPLICATION_CREDENTIALS or explicitly create credentials and re-run the application. For more information, please see https://cloud.google.com/docs/authentication/getting-started'
     if str(e) == credentialError_string:
-        print(f'## INVALID CREDENTIALS ##\n\n{credentialError_string}\n\nContact fynugroho@exoduspi.org to be issued the respective Google Cloud Platform credentials to run this software.')
+        print(f'## INVALID CREDENTIALS ##\n\n{credentialError_string}\n\nContact fynugroho@exoduspi.com to be issued the respective Google Cloud Platform credentials to run this software.')
     else:
         print(e)
     sys.exit()
@@ -40,13 +39,12 @@ analytics.write_key = keys['segmentKey']
 
 @client.event
 async def on_ready():
-    client.loop.create_task(webserver.sanic_webserver(client, keys, capture_message))
-    print (f'APX Bot Running on {runtime} mode.')
+    print (f'GVAW Bot Running on {runtime} mode.')
     print('Logged in as')
     print(client.user.name)
     print(client.user.id)
     print('------')
-    game = discord.Game("!apxhelp")
+    game = discord.Game("!gvawhelp")
     await client.change_presence(status=discord.Status.online, activity=game)
 
 @client.command(pass_context=True)
@@ -54,7 +52,7 @@ async def serverstats(ctx, serverTitle:str=None):
     channelId = str(ctx.message.channel.id)
     guildId = str(ctx.message.guild.id)
 
-    await apx_commands.serverstats.server_statsLogic(ctx, firestore, db, author, channelId, guildId, serverTitle, discord.Embed, capture_message)
+    await gvaw_commands.serverstats.server_statsLogic(ctx, firestore, db, author, channelId, guildId, serverTitle, discord.Embed, capture_message)
 
     analytics.track(ctx.message.author.id, 'Server Info Request', {
         'User ID': ctx.message.author.id,
@@ -71,7 +69,7 @@ async def serversearch(ctx, serverTitle:str=None):
     channelId = str(ctx.message.channel.id)
     guildId = str(ctx.message.guild.id)
 
-    await apx_commands.serversearch.server_searchLogic(ctx, firestore, db, author, channelId, guildId, serverTitle, capture_message)
+    await gvaw_commands.serversearch.server_searchLogic(ctx, firestore, db, author, channelId, guildId, serverTitle, capture_message)
 
     analytics.track(ctx.message.author.id, 'Server Info Request', {
         'User ID': ctx.message.author.id,
@@ -89,7 +87,7 @@ async def serverconfig(ctx, operation:str=None, serverTitle:str=None, serverId:i
     channelId = str(ctx.message.channel.id)
     guildId = str(ctx.message.guild.id)
 
-    await apx_commands.serverconfig.server_configLogic(ctx, firestore, db, channelId, guildId, operation, serverTitle, serverId)
+    await gvaw_commands.serverconfig.server_configLogic(ctx, firestore, db, channelId, guildId, operation, serverTitle, serverId)
 
     analytics.track(ctx.message.author.id, 'Server List Config Request', {
         'User ID': ctx.message.author.id,
@@ -124,7 +122,7 @@ async def channelconfig(ctx, operation:str=None, channel:str=None):
     channelId = str(ctx.message.channel.id)
     guildId = str(ctx.message.guild.id)
 
-    await apx_commands.channelconfig.channel_configLogic(ctx, firestore, db, channelId, guildId, operation, channel)
+    await gvaw_commands.channelconfig.channel_configLogic(ctx, firestore, db, channelId, guildId, operation, channel)
 
     analytics.track(ctx.message.author.id, 'Channel List Config Request', {
         'User ID': ctx.message.author.id,
@@ -147,11 +145,11 @@ async def channelconfig_error(ctx, error):
 
 
 @client.command(pass_context=True)
-async def apxhelp(ctx):
+async def gvawhelp(ctx):
     channelId = str(ctx.message.channel.id)
     guildId = str(ctx.message.guild.id)
 
-    channelList = utility.retrieveDb_data(db, option='channellist', title=guildId)
+    channelList = utility.retrieveDb_data(db, option='channel-list', title=guildId)
     channelVerify = await utility.checkChannel(db, firestore, channelList, channelId, guildId)
 
     if channelVerify:
