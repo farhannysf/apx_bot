@@ -11,7 +11,9 @@ The bot is able to show current mission, number of players and active players li
 ### !gvawhelp
 Display help message.
 
-![Alt Text](https://github.com/farhannysf/apx_bot/blob/master/docs/apxhelp.gif)
+![help](https://raw.githubusercontent.com/farhannysf/apx_bot/gvaw/docs/help.png)
+
+---
 
 ### !channelconfig
 Authorize or revoke bot access to channels.
@@ -22,7 +24,19 @@ Authorize bot access to #example-channel.
 ###### `!channelconfig revoke #example-channel`
 Revoke bot access to #example-channel.
 
-![Alt Text](https://github.com/farhannysf/apx_bot/blob/master/docs/channelconfig.gif)
+![channelconfig](https://raw.githubusercontent.com/farhannysf/apx_bot/gvaw/docs/channelconfig.png)
+
+---
+
+### !serversearch
+Search for ArmA 3 servers Battlemetrics ID.
+
+###### `!serversearch server name`
+Search for Battlemetrics ID by server name.
+
+![serversearch](https://raw.githubusercontent.com/farhannysf/apx_bot/gvaw/docs/serversearch.png)
+
+---
 
 ### !serverconfig
 Assign or remove ArmA 3 servers on Battlemetrics to the bot.
@@ -35,7 +49,9 @@ Assign a name to the respective server using Battlemetrics ID and save it to the
 ###### `!serverconfig delete [name]`
 Remove saved server from the bot by the assigned name.
 
-![Alt Text](https://github.com/farhannysf/apx_bot/blob/master/docs/serverconfig.gif)
+![serverconfig](https://raw.githubusercontent.com/farhannysf/apx_bot/gvaw/docs/serverconfig.png)
+
+---
 
 ### !serverstats
 Check status of saved server.
@@ -43,15 +59,9 @@ Check status of saved server.
 ###### `!serverstats [name]`
 Check status of a server by the assigned name.
 
-![Alt Text](https://github.com/farhannysf/apx_bot/blob/master/docs/serverstats.gif)
+![serverstats](https://raw.githubusercontent.com/farhannysf/apx_bot/gvaw/docs/serverstats.png)
 
-### !serversearch
-Search for ArmA 3 servers Battlemetrics ID.
-
-###### `!serversearch "server name"`
-Search for Battlemetrics ID by server name.
-
-![Alt Text](https://github.com/farhannysf/apx_bot/blob/master/docs/serversearch.gif)
+---
 
 # Sites/Tools used
 

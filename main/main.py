@@ -162,7 +162,7 @@ async def gvawhelp(ctx):
             '`!serverconfig update [name] [battlemetrics id]`\nAssign a name to the respective server using Battlemetrics ID and save it to the bot.\n\n'
             '`!serverconfig delete [name]`\nRemove saved server from the bot by the assigned name.\n\n• **!serverstats**\nCheck status of saved server.\n\n'
             f'`!serverstats [name]`\nCheck status of a server by the assigned name.\n\n• **!serversearch**\nSearch for ArmA 3 servers Battlemetrics ID.\n\n'
-            f'`!serversearch "server name"`\nSearch for Battlemetrics ID by server name.\n\nContact {author} for more support.')
+            f'`!serversearch server name`\nSearch for Battlemetrics ID by server name.\n\nContact {author} for more support.')
 
         await ctx.send(helpMessage)
         
