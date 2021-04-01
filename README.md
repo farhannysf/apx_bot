@@ -5,7 +5,19 @@ A simple Discord bot to check for ArmA 3 server status.
 This project is made to improve players convenience and reduce time spent when checking current mission and number of players of ArmA 3 servers in Battlemetrics through Discord integration.
 
 # Features
-The bot is able to show current mission, number of players and active players list on a server when !serverstats command is invoked by a user. Users can browse through the list of servers on Battlemetrics by server name to retrieve the server ID. Channel authorization can be managed by authorized users through !channelconfig command. Respectively, server list can also be managed by authorized users through !serverconfig command. The bot is also containerized using Docker to provide more portability in deployment. It is using Sentry for logging and error tracking, Segment with Amplitude integration for analytics and Google Cloud Firestore to store channel, server list and configuration variables. There are two available runtime modes, each accomodates for production and development purpose.
+The bot is able to show current mission, number of players and active players list on a server when !serverstats command is invoked by a user.
+
+Users can browse through the list of servers on Battlemetrics by server name to retrieve the server ID with !serversearch command. 
+
+Channel authorization can be managed by users with sufficient permission in the Discord guild through !channelconfig command. 
+
+Respectively, server list can also be managed by by users with sufficient permission in the Discord guild through !serverconfig command. 
+
+The bot is also containerized using Docker with image pulled from [Platform One](https://p1.dso.mil/) registry to provide more security and portability in deployment. 
+
+It is using Sentry for logging and error tracking, Segment with Amplitude integration for analytics and Google Cloud Firestore to store channel, server list and configuration variables. 
+
+There are two available built-in runtime modes, each accomodates for development and production purpose. This is designed to keep environments across the application lifecycle as similar as possible and maximize dev/prod parity.
 
 # Usage
 ### !gvawhelp
@@ -69,8 +81,6 @@ Check status of a server by the assigned name.
 * [aiohttp](https://docs.aiohttp.org/en/stable/)
 * [asyncio](https://docs.python.org/3.6/library/asyncio.html)
 * [discord.py](https://discordpy.readthedocs.io/en/latest/)
-* [sanic](https://sanic.readthedocs.io/en/latest/)
-* [python-dotenv](https://github.com/theskumar/python-dotenv)
 * [sentry-sdk](https://docs.sentry.io/error-reporting/quickstart/?platform=python)
 * [analytics-python](https://segment.com/docs/sources/server/python/)
 * [google-cloud-firestore](https://cloud.google.com/firestore/docs/quickstart-servers)

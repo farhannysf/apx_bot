@@ -15,130 +15,196 @@ from discord.ext import commands
 from google.cloud import firestore
 from sentry_sdk import capture_message
 
-client = commands.Bot(command_prefix='!')
+client = commands.Bot(command_prefix="!")
 
 # Initiate Google Cloud Firestore
 try:
     db = firestore.Client()
 except Exception as e:
-    credentialError_string = 'Could not automatically determine credentials. Please set GOOGLE_APPLICATION_CREDENTIALS or explicitly create credentials and re-run the application. For more information, please see https://cloud.google.com/docs/authentication/getting-started'
+    credentialError_string = "Could not automatically determine credentials. Please set GOOGLE_APPLICATION_CREDENTIALS or explicitly create credentials and re-run the application. For more information, please see https://cloud.google.com/docs/authentication/getting-started"
     if str(e) == credentialError_string:
-        print(f'## INVALID CREDENTIALS ##\n\n{credentialError_string}\n\nContact fynugroho@exoduspi.com to be issued the respective Google Cloud Platform credentials to run this software.')
+        print(
+            f"## INVALID CREDENTIALS ##\n\n{credentialError_string}\n\nContact fynugroho@exoduspi.com to be issued the respective Google Cloud Platform credentials to run this software."
+        )
     else:
         print(e)
     sys.exit()
 
-keys = utility.retrieveDb_data(db, option='keys', title='api')
- 
+keys = utility.retrieveDb_data(db, option="keys", title="api")
+
 # Initiate logging and sentry
 logging.basicConfig(level=logging.INFO)
-sentry_sdk.init(keys['sentryUrl'])
+sentry_sdk.init(keys["sentryUrl"])
 
 # Initiate Segment analytics
-analytics.write_key = keys['segmentKey']
+analytics.write_key = keys["segmentKey"]
+
 
 @client.event
 async def on_ready():
-    print (f'GVAW Bot Running on {runtime} mode.')
-    print('Logged in as')
+    print(f"GVAW Bot Running on {runtime} mode.")
+    print("Logged in as")
     print(client.user.name)
     print(client.user.id)
-    print('------')
+    print("------")
     game = discord.Game("!gvawhelp")
     await client.change_presence(status=discord.Status.online, activity=game)
 
+
 @client.command(pass_context=True)
-async def serverstats(ctx, serverTitle:str=None):
+async def serverstats(ctx, serverTitle: str = None):
     channelId = str(ctx.message.channel.id)
     guildId = str(ctx.message.guild.id)
 
-    await gvaw_commands.serverstats.server_statsLogic(ctx, firestore, db, author, channelId, guildId, serverTitle, discord.Embed, capture_message)
+    await gvaw_commands.serverstats.server_statsLogic(
+        ctx,
+        firestore,
+        db,
+        author,
+        channelId,
+        guildId,
+        serverTitle,
+        discord.Embed,
+        capture_message,
+    )
 
-    analytics.track(ctx.message.author.id, 'Server Info Request', {
-        'User ID': ctx.message.author.id,
-        'Username': ctx.message.author.name,
-        'Channel ID': channelId,
-        'Channel name': ctx.message.channel.name,
-        'Guild ID': guildId,
-        'Guild name': ctx.message.guild.name,
-        'Server name': serverTitle
-    })
+    analytics.track(
+        ctx.message.author.id,
+        "Server Info Request",
+        {
+            "User ID": ctx.message.author.id,
+            "Username": ctx.message.author.name,
+            "Channel ID": channelId,
+            "Channel name": ctx.message.channel.name,
+            "Guild ID": guildId,
+            "Guild name": ctx.message.guild.name,
+            "Server name": serverTitle,
+        },
+    )
+
+
+@serverstats.error
+async def serverstats_error(ctx, error):
+    await ctx.send(str(error))
+
 
 @client.command(pass_context=True)
-async def serversearch(ctx, serverTitle:str=None):
+async def serversearch(ctx, serverTitle: str = None):
     channelId = str(ctx.message.channel.id)
     guildId = str(ctx.message.guild.id)
 
-    await gvaw_commands.serversearch.server_searchLogic(ctx, firestore, db, author, channelId, guildId, serverTitle, capture_message)
+    await gvaw_commands.serversearch.server_searchLogic(
+        ctx,
+        discord.Embed,
+        firestore,
+        db,
+        author,
+        channelId,
+        guildId,
+        serverTitle,
+        capture_message,
+    )
 
-    analytics.track(ctx.message.author.id, 'Server Info Request', {
-        'User ID': ctx.message.author.id,
-        'Username': ctx.message.author.name,
-        'Channel ID': channelId,
-        'Channel name': ctx.message.channel.name,
-        'Guild ID': guildId,
-        'Guild name': ctx.message.guild.name,
-        'Server name': serverTitle
-    })
+    analytics.track(
+        ctx.message.author.id,
+        "Server Info Request",
+        {
+            "User ID": ctx.message.author.id,
+            "Username": ctx.message.author.name,
+            "Channel ID": channelId,
+            "Channel name": ctx.message.channel.name,
+            "Guild ID": guildId,
+            "Guild name": ctx.message.guild.name,
+            "Server name": serverTitle,
+        },
+    )
+
 
 @client.command(pass_context=True)
 @commands.has_permissions(manage_messages=True)
-async def serverconfig(ctx, operation:str=None, serverTitle:str=None, serverId:int=None):
+async def serverconfig(
+    ctx, operation: str = None, serverTitle: str = None, serverId: int = None
+):
     channelId = str(ctx.message.channel.id)
     guildId = str(ctx.message.guild.id)
 
-    await gvaw_commands.serverconfig.server_configLogic(ctx, firestore, db, channelId, guildId, operation, serverTitle, serverId)
+    await gvaw_commands.serverconfig.server_configLogic(
+        ctx,
+        discord.Embed,
+        firestore,
+        db,
+        channelId,
+        guildId,
+        operation,
+        serverTitle,
+        serverId,
+    )
 
-    analytics.track(ctx.message.author.id, 'Server List Config Request', {
-        'User ID': ctx.message.author.id,
-        'Username': ctx.message.author.name,
-        'Channel ID': channelId,
-        'Channel name': ctx.message.channel.name,
-        'Guild ID': guildId,
-        'Guild name': ctx.message.guild.name,
-        'Operation': operation,
-        'Server name': serverTitle,
-        'Server ID': serverId
-    })
+    analytics.track(
+        ctx.message.author.id,
+        "Server List Config Request",
+        {
+            "User ID": ctx.message.author.id,
+            "Username": ctx.message.author.name,
+            "Channel ID": channelId,
+            "Channel name": ctx.message.channel.name,
+            "Guild ID": guildId,
+            "Guild name": ctx.message.guild.name,
+            "Operation": operation,
+            "Server name": serverTitle,
+            "Server ID": serverId,
+        },
+    )
+
 
 @serverconfig.error
 async def serverconfig_error(ctx, error):
     valueError = "Command raised an exception: ValueError"
-    
+
     if isinstance(error, commands.MissingPermissions):
-        await ctx.send('You have no sufficient permission in this guild to use this command. Please contact guild administrator.')
-    
+        await ctx.send(
+            "You have no sufficient permission in this guild to use this command. Please contact guild administrator."
+        )
+
     if str(error)[0:39] == valueError:
-        await ctx.send('Assigned name must not include any space or special character.')
-    
+        await ctx.send("Assigned name must not include any space or special character.")
+
     else:
         capture_message(error)
 
 
-
 @client.command(pass_context=True)
 @commands.has_permissions(manage_messages=True)
-async def channelconfig(ctx, operation:str=None, channel:str=None):
+async def channelconfig(ctx, operation: str = None, channel: str = None):
     channelId = str(ctx.message.channel.id)
     guildId = str(ctx.message.guild.id)
 
-    await gvaw_commands.channelconfig.channel_configLogic(ctx, firestore, db, channelId, guildId, operation, channel)
+    await gvaw_commands.channelconfig.channel_configLogic(
+        ctx, discord.Embed, firestore, db, channelId, guildId, operation, channel
+    )
 
-    analytics.track(ctx.message.author.id, 'Channel List Config Request', {
-        'User ID': ctx.message.author.id,
-        'Username': ctx.message.author.name,
-        'Channel ID': channelId,
-        'Channel name': ctx.message.channel.name,
-        'Guild ID': guildId,
-        'Guild name': ctx.message.guild.name,
-        'Operation': operation,
-        'Channel set': channel
-    })
+    analytics.track(
+        ctx.message.author.id,
+        "Channel List Config Request",
+        {
+            "User ID": ctx.message.author.id,
+            "Username": ctx.message.author.name,
+            "Channel ID": channelId,
+            "Channel name": ctx.message.channel.name,
+            "Guild ID": guildId,
+            "Guild name": ctx.message.guild.name,
+            "Operation": operation,
+            "Channel set": channel,
+        },
+    )
+
 
 @channelconfig.error
 async def channelconfig_error(ctx, error):
     if isinstance(error, commands.MissingPermissions):
-        await ctx.send('You have no sufficient permission in this guild to use this command. Please contact guild administrator.')
+        await ctx.send(
+            "You have no sufficient permission in this guild to use this command. Please contact guild administrator."
+        )
 
     else:
         capture_message(error)
@@ -149,53 +215,71 @@ async def gvawhelp(ctx):
     channelId = str(ctx.message.channel.id)
     guildId = str(ctx.message.guild.id)
 
-    channelList = utility.retrieveDb_data(db, option='channel-list', title=guildId)
-    channelVerify = await utility.checkChannel(db, firestore, channelList, channelId, guildId)
+    channelList = utility.retrieveDb_data(db, option="channel-list", title=guildId)
+    channelVerify = await utility.checkChannel(
+        db, firestore, channelList, channelId, guildId
+    )
 
     if channelVerify:
+        gvawHelp = "Display list of commands and usage example.\n------"
+        channelConfig = "Authorize or revoke bot access to channels.\n\n`!channelconfig authorize #example-channel`\n\nAuthorize access to #example-channel.\n\n`!channelconfig revoke #example-channel`\n\nRevoke access to #example-channel.\n------"
+        serverSearch = "Search for Battlemetrics ID by server name.\n\n`!serversearch server name`\n------"
+        serverConfig = "Assign or remove ArmA 3 servers on Battlemetrics to the bot.\n\n`!serverconfig update [name] [battlemetrics id]`\n\nAssign a name to the respective server using Battlemetrics ID and save it to the bot.\n\n`!serverconfig delete [name]`\n\nRemove saved server from the bot by the assigned name.\n------"
+        serverStats = "Check status of a server by the assigned name.\n\n`!serverstats [name]`\n------"
+        authorInfo = f"Contact {author}"
 
-        helpMessage = ('__List of Commands__\n\n• **!apxhelp**\nDisplay help message.\n\n'
-            '• **!channelconfig**\nAuthorize or revoke bot access to channels.\n\n'
-            '`!channelconfig authorize #example-channel`\nAuthorize bot access to #example-channel.\n\n'
-            '`!channelconfig revoke #example-channel`\nRevoke bot access to #example-channel.\n\n• **!serverconfig**\n'
-            'Assign or remove ArmA 3 servers on Battlemetrics to the bot.\nAssigned name must not include any space or special character.\n\n'
-            '`!serverconfig update [name] [battlemetrics id]`\nAssign a name to the respective server using Battlemetrics ID and save it to the bot.\n\n'
-            '`!serverconfig delete [name]`\nRemove saved server from the bot by the assigned name.\n\n• **!serverstats**\nCheck status of saved server.\n\n'
-            f'`!serverstats [name]`\nCheck status of a server by the assigned name.\n\n• **!serversearch**\nSearch for ArmA 3 servers Battlemetrics ID.\n\n'
-            f'`!serversearch server name`\nSearch for Battlemetrics ID by server name.\n\nContact {author} for more support.')
+        embed = discord.Embed(
+            title="GvAW Help",
+            description="List of commands and usage example",
+            color=0xE74C3C,
+        )
 
-        await ctx.send(helpMessage)
-        
-        analytics.track(ctx.message.author.id, 'Help Request', {
-            'User ID': ctx.message.author.id,
-            'Username': ctx.message.author.name,
-            'Channel ID': channelId,
-            'Channel name': ctx.message.channel.name,
-            'Guild ID': guildId,
-            'Guild name': ctx.message.guild.name
-        })
-        
+        embed.add_field(name="!gvawhelp", value=gvawHelp, inline=False)
+        embed.add_field(name="!serverstats", value=serverStats, inline=False)
+        embed.add_field(name="!serversearch", value=serverSearch, inline=False)
+        embed.add_field(name="!channelconfig", value=channelConfig, inline=False)
+        embed.add_field(name="!serverconfig", value=serverConfig, inline=False)
+        embed.add_field(name="More info:", value=authorInfo, inline=False)
+        embed.set_thumbnail(url=utility.gvawLogo_url)
+
+        await ctx.send(embed=embed)
+
+        analytics.track(
+            ctx.message.author.id,
+            "Help Request",
+            {
+                "User ID": ctx.message.author.id,
+                "Username": ctx.message.author.name,
+                "Channel ID": channelId,
+                "Channel name": ctx.message.channel.name,
+                "Guild ID": guildId,
+                "Guild name": ctx.message.guild.name,
+            },
+        )
+
         return
 
-    return await ctx.send('`This channel is not authorized. Use !channelconfig to authorize channels.`')
+    return await ctx.send(
+        "`This channel is not authorized. Use !channelconfig to authorize channels.`"
+    )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print ('Usage: python main.py [runtime]')
+        print("Usage: python main.py [runtime]")
         sys.exit()
 
-    author = keys['authorId']
+    author = keys["authorId"]
     runtime = sys.argv[1]
 
-    if runtime == 'prod':
-        discordKey = keys['discordToken']
-    
-    elif runtime == 'dev':
-        discordKey = keys['discordToken_dev']
-    
+    if runtime == "prod":
+        discordKey = keys["discordToken"]
+
+    elif runtime == "dev":
+        discordKey = keys["discordToken_dev"]
+
     else:
-        print ('Usage: python main.py [runtime]')
+        print("Usage: python main.py [runtime]")
         sys.exit()
 
     client.run(discordKey)

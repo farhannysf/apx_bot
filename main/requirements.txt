@@ -1,6 +1,5 @@
 asyncio
 aiohttp
-python-dotenv
 discord.py
 sentry-sdk
 analytics-python
