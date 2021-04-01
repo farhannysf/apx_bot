@@ -11,10 +11,10 @@ async def server_statsLogic(ctx, firestore, db, author, channelId, guildId, serv
             return await ctx.send('No server is set. Use `!serverconfig` for more info.')
 
         try:
-            server = serverList[str(serverTitle)]
+            server = serverList[str(guildId)][str(serverTitle)]
         
         except KeyError:
-            availableServers = '\n'.join('{} (Battlemetrics ID: {})'.format(key, value) for key, value in serverList.items())
+            availableServers = '\n'.join('{} (Battlemetrics ID: {})'.format(key, value) for key, value in serverList[str(guildId)].items())
             return await ctx.send(f'**Usage:**\n\n`!serverstats [name]`\n\n**Available Servers:**\n\n`{availableServers}`')
 
         serverData = await utility.getData(f'https://api.battlemetrics.com/servers/{server}', params=None, capture_message=capture_message)

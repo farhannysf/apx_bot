@@ -22,7 +22,7 @@ async def server_configLogic(ctx, firestore, db, channelId, guildId, operation, 
             if serverTitle is None or serverId is None:
                 return await ctx.send(usageMessage)
             
-            data = {str(serverTitle):str(serverId)}
+            data = {str(guildId):{str(serverTitle):str(serverId)}}
             serverlistDb.update(data)
             return await ctx.send(f'**Updated server list.**\n `Server {serverTitle} (Battlemetrics ID: {serverId})`')
         
