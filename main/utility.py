@@ -31,13 +31,6 @@ async def getData(url, params, capture_message):
 
 
 async def embify(serverData, playerData, discordEmbed, capture_message):
-    if not playerData["data"]:
-        players = "No active players."
-
-    else:
-        playerList = [item["attributes"]["name"] for item in playerData["data"]]
-        players = "\n".join(playerList)
-
     serverName = serverData["data"]["attributes"]["name"]
     serverIP = serverData["data"]["attributes"]["ip"]
     serverStats = serverData["data"]["attributes"]["status"]
@@ -56,7 +49,6 @@ async def embify(serverData, playerData, discordEmbed, capture_message):
         embed.add_field(
             name="Players", value=f"{activePlayer}/{maxPlayer}", inline=True
         )
-        embed.add_field(name="Active Players", value=players, inline=False)
 
     elif serverStats == "dead" or serverStats == "removed":
         capture_message(f"{serverName} is {serverStats}")
