@@ -29,15 +29,25 @@ async def getData(url, params, capture_message):
     else:
         capture_message(f"Battlemetrics API: {response.status}")
 
-async def getDCS_data(url, params, capture_message):
-    response = await asyncGet(url, params=params)
+
+async def getDCS_data(url, params, key, capture_message):
+    payload = {
+        "AUTH_FORM": "Y",
+        "TYPE": "AUTH",
+        "backurl": "/en/personal/server/?ajax=y",
+        "USER_LOGIN": key["DCS_USERNAME"],
+        "USER_PASSWORD": key["DCS_PASSWORD"],
+        "USER_REMEMBER": "Y",
+    }
+    response = await asyncPost(url, data=payload)
 
     if response.status == 200:
         data = await response.text()
         return data
 
     else:
-        capture_message(f"glowie: {response.status}")
+        capture_message(f"DCS: {response.status}")
+
 
 async def embify(serverData, playerData, discordEmbed, capture_message):
     serverName = serverData["data"]["attributes"]["name"]

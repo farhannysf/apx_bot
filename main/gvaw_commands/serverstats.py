@@ -1,5 +1,5 @@
 import utility
-from bs4 import BeautifulSoup
+import json
 
 
 async def server_statsLogic(
@@ -52,37 +52,59 @@ async def server_statsLogic(
 
         dcsCheck = serverList[serverTitle.replace("-", "")]["name"].split("-")
         if dcsCheck[-1] == "dcs":
-            serverUrl = "https://dcs.glowie.xyz/servers/101.50.3.86:10308"
-            serverData_body = await utility.getDCS_data(
-                serverUrl, params=None, capture_message=capture_message
-            )
+            from main import keys
 
-            serverData_parsed = BeautifulSoup(serverData_body, "html.parser")
-            table = serverData_parsed.table.find_all("td")
-            serverStats = "online"
-            serverName = table[4].string
-            serverIP = table[4].a["href"].split("/")
-            scenario = table[1].string.split("(")
-            players = table[2].string.split("(")
-            embed = discordEmbed(
-                title=serverName, description=serverStats.title(), color=0x00FF00
+            dcsKeys = {
+                "DCS_USERNAME": keys["DCS_USERNAME"],
+                "DCS_PASSWORD": keys["DCS_PASSWORD"],
+            }
+            serverUrl = "https://www.digitalcombatsimulator.com/en/auth/"
+            servers_body = await utility.getDCS_data(
+                serverUrl, params=None, key=dcsKeys, capture_message=capture_message
             )
-            embed.set_thumbnail(url=utility.gvawLogo_url)
+            servers = json.loads(servers_body)
+            serverIndex = next(
+                (
+                    index
+                    for (index, d) in enumerate(servers["SERVERS"])
+                    if d["IP_ADDRESS"] == "101.50.3.86"
+                ),
+                None,
+            )
+            server = servers["SERVERS"][serverIndex]
+            serverStats = "online"
 
             if serverStats == "online":
-                embed.add_field(name="IP Address", value=serverIP[2], inline=False)
-                embed.add_field(name="Uptime", value=scenario[1][:-1], inline=False)
-                embed.add_field(name="Scenario", value=scenario[0], inline=False)
+                serverName = server["NAME"]
+                serverIP = server["IP_ADDRESS"]
+                serverPort = server["PORT"]
+                scenario = server["MISSION_NAME"]
+                scenarioUptime = server["MISSION_TIME_FORMATTED"]
+                players = server["PLAYERS"]
+                maxPlayers = server["PLAYERS_MAX"]
+
+                embed = discordEmbed(
+                    title=serverName, description=serverStats.title(), color=0x00FF00
+                )
+                embed.set_thumbnail(url=utility.gvawLogo_url)
+                embed.add_field(
+                    name="IP Address", value=f"{serverIP}:{serverPort}", inline=False
+                )
+                embed.add_field(name="Scenario", value=scenario, inline=False)
+                embed.add_field(name="Uptime", value=scenarioUptime, inline=False)
                 embed.add_field(
                     name="Players",
-                    value=f"{players[0].replace(' ','')}/{players[1][:-1]}",
+                    value=f"{players}/{maxPlayers}",
                     inline=True,
                 )
+                # WIP
+                return await ctx.send(embed=embed)
 
-            elif serverStats == "dead" or serverStats == "removed":
-                capture_message(f"{serverName} is {serverStats}")
+            elif serverStats == "offline":
+                message = f"{dcsCheck[-1]} is {serverStats}"
+                capture_message(message)
 
-            return await ctx.send(embed=embed)
+                return await ctx.send(message)
 
         serverData = await utility.getData(
             f"https://api.battlemetrics.com/servers/{server}",
