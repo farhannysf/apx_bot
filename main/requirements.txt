@@ -4,3 +4,4 @@ discord.py
 sentry-sdk
 analytics-python
 google-cloud-firestore
+beautifulsoup4

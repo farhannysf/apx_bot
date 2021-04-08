@@ -29,6 +29,15 @@ async def getData(url, params, capture_message):
     else:
         capture_message(f"Battlemetrics API: {response.status}")
 
+async def getDCS_data(url, params, capture_message):
+    response = await asyncGet(url, params=params)
+
+    if response.status == 200:
+        data = await response.text()
+        return data
+
+    else:
+        capture_message(f"glowie: {response.status}")
 
 async def embify(serverData, playerData, discordEmbed, capture_message):
     serverName = serverData["data"]["attributes"]["name"]

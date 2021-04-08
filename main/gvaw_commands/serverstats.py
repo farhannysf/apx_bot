@@ -1,4 +1,5 @@
 import utility
+from bs4 import BeautifulSoup
 
 
 async def server_statsLogic(
@@ -47,6 +48,40 @@ async def server_statsLogic(
             embed.add_field(
                 name="Available Servers", value=f"{availableServers}\n------"
             )
+            return await ctx.send(embed=embed)
+
+        dcsCheck = serverList[serverTitle.replace("-", "")]["name"].split("-")
+        if dcsCheck[-1] == "dcs":
+            serverUrl = "https://dcs.glowie.xyz/servers/101.50.3.86:10308"
+            serverData_body = await utility.getDCS_data(
+                serverUrl, params=None, capture_message=capture_message
+            )
+
+            serverData_parsed = BeautifulSoup(serverData_body, "html.parser")
+            table = serverData_parsed.table.find_all("td")
+            serverStats = "online"
+            serverName = table[4].string
+            serverIP = table[4].a["href"].split("/")
+            scenario = table[1].string.split("(")
+            players = table[2].string.split("(")
+            embed = discordEmbed(
+                title=serverName, description=serverStats.title(), color=0x00FF00
+            )
+            embed.set_thumbnail(url=utility.gvawLogo_url)
+
+            if serverStats == "online":
+                embed.add_field(name="IP Address", value=serverIP[2], inline=False)
+                embed.add_field(name="Uptime", value=scenario[1][:-1], inline=False)
+                embed.add_field(name="Scenario", value=scenario[0], inline=False)
+                embed.add_field(
+                    name="Players",
+                    value=f"{players[0].replace(' ','')}/{players[1][:-1]}",
+                    inline=True,
+                )
+
+            elif serverStats == "dead" or serverStats == "removed":
+                capture_message(f"{serverName} is {serverStats}")
+
             return await ctx.send(embed=embed)
 
         serverData = await utility.getData(
