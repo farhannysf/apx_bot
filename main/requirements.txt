@@ -1,6 +1,7 @@
 asyncio
 aiohttp
 discord.py
+python-a2s
 sentry-sdk
 analytics-python
 google-cloud-firestore

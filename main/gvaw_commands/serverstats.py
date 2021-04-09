@@ -27,11 +27,11 @@ async def server_statsLogic(
             )
 
         try:
-            server = serverList[serverTitle.replace("-", "")]["id"]
+            serverIP = serverList[serverTitle.replace("-", "")]["id"]
 
         except (KeyError, AttributeError):
             availableServers = "\n".join(
-                "{} (Battlemetrics ID: {})".format(value["name"], value["id"])
+                "{} (IP: {})".format(value["name"], value["id"])
                 for key, value in serverList.items()
             )
             if availableServers == "":
@@ -67,7 +67,7 @@ async def server_statsLogic(
                 (
                     index
                     for (index, d) in enumerate(servers["SERVERS"])
-                    if d["IP_ADDRESS"] == "101.50.3.86"
+                    if d["IP_ADDRESS"] == serverIP
                 ),
                 None,
             )
@@ -88,12 +88,12 @@ async def server_statsLogic(
                 )
                 embed.set_thumbnail(url=utility.gvawLogo_url)
                 embed.add_field(
-                    name="IP Address", value=f"{serverIP}:{serverPort}", inline=False
+                    name="__IP Address__", value=f"{serverIP}:{serverPort}", inline=False
                 )
-                embed.add_field(name="Scenario", value=scenario, inline=False)
-                embed.add_field(name="Uptime", value=scenarioUptime, inline=False)
+                embed.add_field(name="__Scenario__", value=scenario, inline=False)
+                embed.add_field(name="__Uptime__", value=scenarioUptime, inline=False)
                 embed.add_field(
-                    name="Players",
+                    name="__Players__",
                     value=f"{players}/{maxPlayers}",
                     inline=True,
                 )
@@ -106,28 +106,32 @@ async def server_statsLogic(
 
                 return await ctx.send(message)
 
-        serverData = await utility.getData(
-            f"https://api.battlemetrics.com/servers/{server}",
-            params=None,
-            capture_message=capture_message,
-        )
+        from a2s import ainfo
+        serverAddress = (serverIP, 2303)
+        server = await ainfo(serverAddress)
+        serverStats = "online"
 
-        if serverData is None:
-            return await ctx.send(f"An error has occured, please contact {author}")
+        if serverStats == "online":
+            serverName = server.server_name
+            serverPort = server.port
+            serverMap = server.map_name
+            serverMission = server.game
+            activePlayers = server.player_count
+            maxPlayers = server.max_players
 
-        else:
-            playerData = await utility.getData(
-                "https://api.battlemetrics.com/players",
-                params={"filter[servers]": server, "filter[online]": "true"},
-                capture_message=capture_message,
+            embed = discordEmbed(
+                title=serverName, description=serverStats.title(), color=0x00FF00
+            )
+            embed.set_thumbnail(url=utility.gvawLogo_url)
+            embed.add_field(
+                name="__IP Address__", value=f"{serverIP}:{serverPort}", inline=False
+            )
+            embed.add_field(name="__Map__", value=serverMap, inline=False)
+            embed.add_field(name="__Mission__", value=serverMission, inline=False)
+            embed.add_field(
+                name="__Players__", value=f"{activePlayers}/{maxPlayers}", inline=False
             )
 
-            if playerData is None:
-                return await ctx.send(f"An error has occured, please contact {author}")
-
-            embed = await utility.embify(
-                serverData, playerData, discordEmbed, capture_message
-            )
         return await ctx.send(embed=embed)
 
     else:

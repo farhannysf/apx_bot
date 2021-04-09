@@ -49,32 +49,6 @@ async def getDCS_data(url, params, key, capture_message):
         capture_message(f"DCS: {response.status}")
 
 
-async def embify(serverData, playerData, discordEmbed, capture_message):
-    serverName = serverData["data"]["attributes"]["name"]
-    serverIP = serverData["data"]["attributes"]["ip"]
-    serverStats = serverData["data"]["attributes"]["status"]
-    serverMission = serverData["data"]["attributes"]["details"]["mission"]
-    activePlayer = serverData["data"]["attributes"]["players"]
-    maxPlayer = serverData["data"]["attributes"]["maxPlayers"]
-
-    embed = discordEmbed(
-        title=serverName, description=serverStats.title(), color=0x00FF00
-    )
-    embed.set_thumbnail(url=gvawLogo_url)
-
-    if serverStats == "online":
-        embed.add_field(name="IP Address", value=serverIP, inline=True)
-        embed.add_field(name="Mission", value=serverMission, inline=True)
-        embed.add_field(
-            name="Players", value=f"{activePlayer}/{maxPlayer}", inline=True
-        )
-
-    elif serverStats == "dead" or serverStats == "removed":
-        capture_message(f"{serverName} is {serverStats}")
-
-    return embed
-
-
 def retrieveDb_data(db, option, title):
     data_ref = db.collection(option).document(title)
     docs = data_ref.get()
