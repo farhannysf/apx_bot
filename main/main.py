@@ -123,7 +123,7 @@ async def serversearch(ctx, serverTitle: str = None):
 @client.command(pass_context=True)
 @commands.has_permissions(manage_messages=True)
 async def serverconfig(
-    ctx, operation: str = None, serverTitle: str = None, serverId: int = None
+    ctx, operation: str = None, serverTitle: str = None, serverId: str = None
 ):
     channelId = str(ctx.message.channel.id)
     guildId = str(ctx.message.guild.id)
@@ -224,7 +224,7 @@ async def gvawhelp(ctx):
         gvawHelp = "Display list of commands and usage example.\n------"
         channelConfig = "Authorize or revoke bot access to channels.\n\n`!channelconfig authorize #example-channel`\n\nAuthorize access to #example-channel.\n\n`!channelconfig revoke #example-channel`\n\nRevoke access to #example-channel.\n------"
         serverSearch = "Search for Battlemetrics ID by server name.\n\n`!serversearch server name`\n------"
-        serverConfig = "Assign or remove ArmA 3 servers on Battlemetrics to the bot.\n\n`!serverconfig update [name] [battlemetrics id]`\n\nAssign a name to the respective server using Battlemetrics ID and save it to the bot.\n\n`!serverconfig delete [name]`\n\nRemove saved server from the bot by the assigned name.\n------"
+        serverConfig = "Assign or remove ArmA 3/DCS servers to the bot.\n\nDCS servers must have -dcs suffix on its name.\n\n`!serverconfig update [name] [IP address]`\n\nAssign a name to the ArmA 3 server using the respective IP address and save it to the bot.\n\n`!serverconfig update [name-dcs] [IP address]`\n\nAssign a name to the DCS server using the respective IP address and save it to the bot.\n\n`!serverconfig delete [name]`\n\nRemove saved server from the bot by the assigned name.\n------"
         serverStats = "Check status of a server by the assigned name.\n\n`!serverstats [name]`\n------"
         authorInfo = f"Contact {author}"
 

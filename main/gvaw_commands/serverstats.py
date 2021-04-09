@@ -44,9 +44,9 @@ async def server_statsLogic(
             )
 
             embed.set_thumbnail(url=utility.gvawLogo_url)
-            embed.add_field(name="Usage", value=usageMessage)
+            embed.add_field(name="__Usage__", value=usageMessage)
             embed.add_field(
-                name="Available Servers", value=f"{availableServers}\n------"
+                name="__Available Servers__", value=f"{availableServers}\n------"
             )
             return await ctx.send(embed=embed)
 
@@ -71,44 +71,49 @@ async def server_statsLogic(
                 ),
                 None,
             )
+
+            if serverIndex == None:
+                serverStats = "offline"
+                return await ctx.send(f"`{serverTitle} ({serverIP}) is {serverStats}.`")
+
             server = servers["SERVERS"][serverIndex]
             serverStats = "online"
+            serverName = server["NAME"]
+            serverIP = server["IP_ADDRESS"]
+            serverPort = server["PORT"]
+            scenario = server["MISSION_NAME"]
+            scenarioUptime = server["MISSION_TIME_FORMATTED"]
+            players = server["PLAYERS"]
+            maxPlayers = server["PLAYERS_MAX"]
 
-            if serverStats == "online":
-                serverName = server["NAME"]
-                serverIP = server["IP_ADDRESS"]
-                serverPort = server["PORT"]
-                scenario = server["MISSION_NAME"]
-                scenarioUptime = server["MISSION_TIME_FORMATTED"]
-                players = server["PLAYERS"]
-                maxPlayers = server["PLAYERS_MAX"]
-
-                embed = discordEmbed(
-                    title=serverName, description=serverStats.title(), color=0x00FF00
-                )
-                embed.set_thumbnail(url=utility.gvawLogo_url)
-                embed.add_field(
-                    name="__IP Address__", value=f"{serverIP}:{serverPort}", inline=False
-                )
-                embed.add_field(name="__Scenario__", value=scenario, inline=False)
-                embed.add_field(name="__Uptime__", value=scenarioUptime, inline=False)
-                embed.add_field(
-                    name="__Players__",
-                    value=f"{players}/{maxPlayers}",
-                    inline=True,
-                )
-                # WIP
-                return await ctx.send(embed=embed)
-
-            elif serverStats == "offline":
-                message = f"{dcsCheck[-1]} is {serverStats}"
-                capture_message(message)
-
-                return await ctx.send(message)
+            embed = discordEmbed(
+                title=serverName, description=serverStats.title(), color=0x00FF00
+            )
+            embed.set_thumbnail(url=utility.gvawLogo_url)
+            embed.add_field(
+                name="__IP Address__", value=f"{serverIP}:{serverPort}", inline=False
+            )
+            embed.add_field(name="__Scenario__", value=scenario, inline=False)
+            embed.add_field(name="__Uptime__", value=scenarioUptime, inline=False)
+            embed.add_field(
+                name="__Players__",
+                value=f"{players}/{maxPlayers}",
+                inline=True,
+            )
+            # WIP
+            return await ctx.send(embed=embed)
 
         from a2s import ainfo
+
         serverAddress = (serverIP, 2303)
-        server = await ainfo(serverAddress)
+
+        try:
+            server = await ainfo(serverAddress)
+
+        except ConnectionRefusedError:
+            serverStats = "offline"
+            return await ctx.send(f"`{serverTitle} ({serverIP}) is {serverStats}.`")
+
         serverStats = "online"
 
         if serverStats == "online":

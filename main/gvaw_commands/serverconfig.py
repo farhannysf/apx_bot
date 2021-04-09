@@ -22,15 +22,15 @@ async def server_configLogic(
         serverlistDb = db.collection("server-list").document(str(guildId))
         await utility.checkDb(db, serverList, serverlistDb, firestore)
 
-        usageMessage = "`!serverconfig update [name] [battlmetrics server id]`\n\n`!serverconfig delete [name]`\n------"
+        usageMessage = "`!serverconfig update [name] [IP address]`\n\n`!serverconfig update [name-dcs] [IP address]`\n\n`!serverconfig delete [name]`\n------"
         embed = discordEmbed(
             title="GvAW Server Config",
-            description="Assign or remove ArmA 3 servers on Battlemetrics to the bot",
+            description="Assign or remove ArmA 3/DCS servers to the bot.\n\nDCS servers must have -dcs suffix on its name",
             color=0xE74C3C,
         )
 
         embed.set_thumbnail(url=utility.gvawLogo_url)
-        embed.add_field(name="Usage", value=usageMessage)
+        embed.add_field(name="__Usage__", value=usageMessage)
 
         if operation == "delete":
             if serverTitle is None:
@@ -45,6 +45,14 @@ async def server_configLogic(
             if serverTitle is None or serverId is None:
                 return await ctx.send(embed=embed)
 
+            from ipaddress import ip_address
+
+            try:
+                ip_address(serverId)
+
+            except ValueError as e:
+                return await ctx.send(f"`ERROR: {e}.`")
+
             data = {
                 serverTitle.replace("-", ""): {
                     "name": str(serverTitle),
@@ -53,7 +61,7 @@ async def server_configLogic(
             }
             serverlistDb.update(data)
             return await ctx.send(
-                f"**Updated server list.**\n `Name: {serverTitle} (Battlemetrics ID: {serverId})`"
+                f"**Updated server list.**\n `Name: {serverTitle} (IP: {serverId})`"
             )
 
         else:
