@@ -77,10 +77,10 @@ async def checkChannel(db, firestore, channelList, channelId, guildId):
 
 async def search_resultFormat(serverData):
     serverProperties = {
-        i["attributes"]["name"]: i["attributes"]["id"] for i in serverData["data"]
+        i["attributes"]["name"]: i["attributes"]["ip"] for i in serverData["data"]
     }
     searchResult = "\n\n".join(
-        "{} (Battlemetrics ID: {})".format(key, value)
+        "{} (IP Address: {})".format(key, value)
         for key, value in serverProperties.items()
     )
     return searchResult

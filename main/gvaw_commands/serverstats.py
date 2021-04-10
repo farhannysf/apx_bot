@@ -1,5 +1,6 @@
 import utility
 import json
+from asyncio import TimeoutError as async_TimeOutError
 
 
 async def server_statsLogic(
@@ -27,7 +28,7 @@ async def server_statsLogic(
             )
 
         try:
-            serverIP = serverList[serverTitle.replace("-", "")]["id"]
+            serverIP = serverList[serverTitle.replace("-", "")]["id"].split(":")
 
         except (KeyError, AttributeError):
             availableServers = "\n".join(
@@ -67,14 +68,16 @@ async def server_statsLogic(
                 (
                     index
                     for (index, d) in enumerate(servers["SERVERS"])
-                    if d["IP_ADDRESS"] == serverIP
+                    if d["IP_ADDRESS"] == serverIP[0]
                 ),
                 None,
             )
 
             if serverIndex == None:
                 serverStats = "offline"
-                return await ctx.send(f"`{serverTitle} ({serverIP}) is {serverStats}.`")
+                return await ctx.send(
+                    f"`{serverTitle} ({serverIP[0]}) is {serverStats}.`"
+                )
 
             server = servers["SERVERS"][serverIndex]
             serverStats = "online"
@@ -100,19 +103,23 @@ async def server_statsLogic(
                 value=f"{players}/{maxPlayers}",
                 inline=True,
             )
-            # WIP
+
             return await ctx.send(embed=embed)
 
         from a2s import ainfo
 
-        serverAddress = (serverIP, 2303)
+        serverPort = 2303
+        if len(serverIP) == 2:
+            serverPort = serverIP[1]
+
+        serverAddress = (serverIP[0], serverPort)
 
         try:
             server = await ainfo(serverAddress)
 
-        except ConnectionRefusedError:
+        except (ConnectionRefusedError, async_TimeOutError):
             serverStats = "offline"
-            return await ctx.send(f"`{serverTitle} ({serverIP}) is {serverStats}.`")
+            return await ctx.send(f"`{serverTitle} ({serverIP[0]}) is {serverStats}.`")
 
         serverStats = "online"
 
@@ -129,7 +136,7 @@ async def server_statsLogic(
             )
             embed.set_thumbnail(url=utility.gvawLogo_url)
             embed.add_field(
-                name="__IP Address__", value=f"{serverIP}:{serverPort}", inline=False
+                name="__IP Address__", value=f"{serverIP[0]}:{serverPort}", inline=False
             )
             embed.add_field(name="__Map__", value=serverMap, inline=False)
             embed.add_field(name="__Mission__", value=serverMission, inline=False)

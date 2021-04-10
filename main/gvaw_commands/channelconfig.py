@@ -36,6 +36,11 @@ async def channel_configLogic(
                 )
 
             if operation == "revoke":
+                try:
+                    channelList[str(channelSelect)]
+                except:
+                    return await ctx.send(f"ERROR: <#{channelSelect}> is not authorized yet.")
+
                 data = {str(channelSelect): firestore.DELETE_FIELD}
                 channellist_Db.update(data)
                 return await ctx.send(
@@ -50,6 +55,6 @@ async def channel_configLogic(
     )
 
     embed.set_thumbnail(url=utility.gvawLogo_url)
-    embed.add_field(name="Usage", value=usageMessage)
-    embed.add_field(name="Authorized Channels", value=f"{authorizedChannels}\n------")
+    embed.add_field(name="__Usage__", value=usageMessage)
+    embed.add_field(name="__Authorized Channels__", value=f"{authorizedChannels}\n------")
     return await ctx.send(embed=embed)

@@ -22,10 +22,10 @@ async def server_configLogic(
         serverlistDb = db.collection("server-list").document(str(guildId))
         await utility.checkDb(db, serverList, serverlistDb, firestore)
 
-        usageMessage = "`!serverconfig update [name] [IP address]`\n\n`!serverconfig update [name-dcs] [IP address]`\n\n`!serverconfig delete [name]`\n------"
+        usageMessage = "`!serverconfig update [name] [IP address]`\n\n`!serverconfig update [name] [IP address:port]`\n\n`!serverconfig update [name-dcs] [IP address]`\n\n`!serverconfig delete [name]`\n------"
         embed = discordEmbed(
             title="GvAW Server Config",
-            description="Assign or remove ArmA 3/DCS servers to the bot.\n\nDCS servers must have -dcs suffix on its name",
+            description="Assign or remove ArmA 3/DCS servers to the bot.\n\nYou can specify optional Steam query port for ArmA 3 server on IP address parameter.\n\nDCS servers must have -dcs suffix on its name",
             color=0xE74C3C,
         )
 
@@ -35,6 +35,14 @@ async def server_configLogic(
         if operation == "delete":
             if serverTitle is None:
                 return await ctx.send(embed=embed)
+
+            try:
+                serverList[serverTitle.replace("-", "")]
+            except KeyError:
+                return await ctx.send(
+                    f"`ERROR: {serverTitle} does not exist in the database.`"
+                )
+
             data = {str(serverTitle.replace("-", "")): firestore.DELETE_FIELD}
             serverlistDb.update(data)
             return await ctx.send(
@@ -48,10 +56,19 @@ async def server_configLogic(
             from ipaddress import ip_address
 
             try:
-                ip_address(serverId)
+                serverIP = serverId.split(":")
+                ip_address(serverIP[0])
 
             except ValueError as e:
                 return await ctx.send(f"`ERROR: {e}.`")
+
+            if len(serverIP) == 2:
+                try:
+                    int(serverIP[1])
+                except ValueError:
+                    return await ctx.send(
+                        "`ERROR: Specified port is not in the correct format.`"
+                    )
 
             data = {
                 serverTitle.replace("-", ""): {

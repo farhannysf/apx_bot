@@ -223,8 +223,8 @@ async def gvawhelp(ctx):
     if channelVerify:
         gvawHelp = "Display list of commands and usage example.\n------"
         channelConfig = "Authorize or revoke bot access to channels.\n\n`!channelconfig authorize #example-channel`\n\nAuthorize access to #example-channel.\n\n`!channelconfig revoke #example-channel`\n\nRevoke access to #example-channel.\n------"
-        serverSearch = "Search for Battlemetrics ID by server name.\n\n`!serversearch server name`\n------"
-        serverConfig = "Assign or remove ArmA 3/DCS servers to the bot.\n\nDCS servers must have -dcs suffix on its name.\n\n`!serverconfig update [name] [IP address]`\n\nAssign a name to the ArmA 3 server using the respective IP address and save it to the bot.\n\n`!serverconfig update [name-dcs] [IP address]`\n\nAssign a name to the DCS server using the respective IP address and save it to the bot.\n\n`!serverconfig delete [name]`\n\nRemove saved server from the bot by the assigned name.\n------"
+        serverSearch = "Search for ArmA 3 server IP address by server name.\n\n`!serversearch server name`\n------"
+        serverConfig = "Assign or remove ArmA 3/DCS servers to the bot.\n\nYou can specify optional Steam query port for ArmA 3 server on IP address argument.\n\nDCS servers must have -dcs suffix on its name.\n\n`!serverconfig update [name] [IP address]`\n\nAssign a name to ArmA 3 server using the respective IP address and save it to the bot.\n\n`!serverconfig update [name] [IP address:port]`\n\nAssign a name to ArmA 3 server using the respective IP address with optional Steam query port on IP address parameter and save it to the bot.\n\n`!serverconfig update [name-dcs] [IP address]`\n\nAssign a name to DCS server using the respective IP address and save it to the bot.\n\n`!serverconfig delete [name]`\n\nRemove saved server from the bot by the assigned name.\n------"
         serverStats = "Check status of a server by the assigned name.\n\n`!serverstats [name]`\n------"
         authorInfo = f"Contact {author}"
 

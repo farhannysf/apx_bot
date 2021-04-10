@@ -19,12 +19,12 @@ async def server_searchLogic(
     usageMessage = "`!serversearch server name`\n------"
     embed = discordEmbed(
         title="GvAW Server Search",
-        description="Search for Battlemetrics ID by server name",
+        description="Search for ArmA 3 server IP address by server name",
         color=0xE74C3C,
     )
 
     embed.set_thumbnail(url=utility.gvawLogo_url)
-    embed.add_field(name="Usage", value=usageMessage)
+    embed.add_field(name="__Usage__", value=usageMessage)
 
     if channelVerify:
 
@@ -74,7 +74,7 @@ async def server_searchLogic(
                         )
                         searchResult = await utility.search_resultFormat(serverData)
                         embed.set_field_at(
-                            1, name="Search Result", value=f"{searchResult}\n------"
+                            1, name="__Search Result__", value=f"{searchResult}\n------"
                         )
                         await ctx.send(embed=embed)
 
