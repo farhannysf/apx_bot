@@ -2,16 +2,18 @@
 A simple Discord bot to check for ArmA 3 server status.
 
 # About
-This project is made to improve players convenience and reduce time spent when checking current mission and number of players of ArmA 3 servers in Battlemetrics through Discord integration.
+This project is made to improve players convenience and reduce time spent when checking current mission and number of players of ArmA 3 and DCS servers through Discord integration.
 
 # Features
-The bot is able to show current mission, number of players and active players list on a server when !serverstats command is invoked by a user.
+The bot is able to show current mission, number of players and active players list on a server when [!serverstats](#serverstats) command is invoked by a user. 
 
-Users can browse through the list of servers on Battlemetrics by server name to retrieve the server ID with !serversearch command. 
+It asynchronously fetches ArmA 3 server data directly from the host server's Steam query port (which defaults to port 2303 if not specified by user) with [python-a2s](#tools) while DCS server data is asynchronously fetched through [DCS official website](https://www.digitalcombatsimulator.com/) server list. 
 
-Channel authorization can be managed by users with sufficient permission in the Discord guild through !channelconfig command. 
+Users can browse through the list of ArmA 3 servers on [Battlemetrics](#api) by server name to retrieve the server IP with [!serversearch](#serversearch) command. 
 
-Respectively, server list can also be managed by by users with sufficient permission in the Discord guild through !serverconfig command. 
+Channel authorization can be managed by users with sufficient permission in the Discord guild through [!channelconfig](#channelconfig) command. 
+
+Respectively, server list can also be managed by by users with sufficient permission in the Discord guild through [!serverconfig](#serverconfig) command. 
 
 The bot is also containerized using Docker with image pulled from [Platform One](https://p1.dso.mil/) registry to provide more security and portability in deployment. 
 
@@ -41,22 +43,30 @@ Revoke bot access to #example-channel.
 ---
 
 ### !serversearch
-Search for ArmA 3 servers Battlemetrics ID.
+Search for ArmA 3 servers IP address.
 
 ###### `!serversearch server name`
-Search for Battlemetrics ID by server name.
+Search for ArmA 3 server IP address by server name.
 
 ![serversearch](https://raw.githubusercontent.com/farhannysf/apx_bot/gvaw/docs/serversearch.png)
 
 ---
 
 ### !serverconfig
-Assign or remove ArmA 3 servers on Battlemetrics to the bot.
+Assign or remove ArmA 3/DCS servers to the bot.
 
-Assigned name must not include any space or special character.
+You can specify optional Steam query port for ArmA 3 server on IP address argument.
 
-###### `!serverconfig update [name] [battlemetrics id]`
-Assign a name to the respective server using Battlemetrics ID and save it to the bot.
+DCS servers must have -dcs suffix on its name.
+
+###### `!serverconfig update [name] [IP address]`
+Assign a name to ArmA 3 server using the respective IP address and save it to the bot.
+
+###### `!serverconfig update [name] [IP address:port]`
+Assign a name to ArmA 3 server using the respective IP address with optional Steam query port on IP address parameter and save it to the bot.
+
+###### `!serverconfig update [name-dcs] [IP address]`
+Assign a name to DCS server using the respective IP address and save it to the bot.
 
 ###### `!serverconfig delete [name]`
 Remove saved server from the bot by the assigned name.
@@ -81,6 +91,7 @@ Check status of a server by the assigned name.
 * [aiohttp](https://docs.aiohttp.org/en/stable/)
 * [asyncio](https://docs.python.org/3.6/library/asyncio.html)
 * [discord.py](https://discordpy.readthedocs.io/en/latest/)
+* [python-a2s](https://github.com/Yepoleb/python-a2s)
 * [sentry-sdk](https://docs.sentry.io/error-reporting/quickstart/?platform=python)
 * [analytics-python](https://segment.com/docs/sources/server/python/)
 * [google-cloud-firestore](https://cloud.google.com/firestore/docs/quickstart-servers)
