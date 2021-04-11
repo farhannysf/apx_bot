@@ -1,5 +1,5 @@
 # [GVAW] Bot
-A simple Discord bot to check for ArmA 3 server status.
+A simple Discord bot to check for ArmA 3 and DCS server status.
 
 # About
 This project is made to improve players convenience and reduce time spent when checking current mission and number of players of ArmA 3 and DCS servers through Discord integration.
