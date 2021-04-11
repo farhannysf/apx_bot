@@ -1,17 +1,11 @@
 import utility
-
+import logging
+logger = logging.getLogger(__name__)
 
 async def server_searchLogic(
-    ctx,
-    discordEmbed,
-    firestore,
-    db,
-    author,
-    channelId,
-    guildId,
-    serverTitle,
-    capture_message,
+    ctx, discordEmbed, firestore, db, author, channelId, guildId, serverTitle
 ):
+
     channelList = utility.retrieveDb_data(db, option="channel-list", title=guildId)
     channelVerify = await utility.checkChannel(
         db, firestore, channelList, channelId, guildId
@@ -32,21 +26,23 @@ async def server_searchLogic(
             serverData = await utility.getData(
                 f"https://api.battlemetrics.com/servers",
                 params={"filter[search]": serverTitle, "filter[game]": "arma3"},
-                capture_message=capture_message,
             )
         except TypeError:
             return await ctx.send(embed=embed)
 
         if serverData is None:
+            logger.error("Battlemetrics API response returns None")
             return await ctx.send(f"An error has occured, please contact {author}")
 
         else:
             if not serverData["data"]:
-                embed.add_field(name="Search Result", value="No server found.\n------")
+                embed.add_field(
+                    name="__Search Result__", value="No server found.\n------"
+                )
                 return await ctx.send(embed=embed)
 
             searchResult = await utility.search_resultFormat(serverData)
-            embed.add_field(name="Search Result", value=f"{searchResult}\n------")
+            embed.add_field(name="__Search Result__", value=f"{searchResult}\n------")
             await ctx.send(embed=embed)
 
             if serverData["links"]:
@@ -69,9 +65,7 @@ async def server_searchLogic(
                         break
 
                     elif msg.content == "!next":
-                        serverData = await utility.getData(
-                            link, params=None, capture_message=capture_message
-                        )
+                        serverData = await utility.getData(link, params=None)
                         searchResult = await utility.search_resultFormat(serverData)
                         embed.set_field_at(
                             1, name="__Search Result__", value=f"{searchResult}\n------"

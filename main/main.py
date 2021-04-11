@@ -13,7 +13,6 @@ import gvaw_commands.channelconfig
 
 from discord.ext import commands
 from google.cloud import firestore
-from sentry_sdk import capture_message
 
 client = commands.Bot(command_prefix="!")
 
@@ -34,6 +33,7 @@ keys = utility.retrieveDb_data(db, option="keys", title="api")
 
 # Initiate logging and sentry
 logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 sentry_sdk.init(keys["sentryUrl"])
 
 # Initiate Segment analytics
@@ -42,11 +42,9 @@ analytics.write_key = keys["segmentKey"]
 
 @client.event
 async def on_ready():
-    print(f"GVAW Bot Running on {runtime} mode.")
-    print("Logged in as")
-    print(client.user.name)
-    print(client.user.id)
-    print("------")
+    logger.info(
+        f"Logged in as {client.user.name} ({client.user.id}), running on {runtime} mode.\n------"
+    )
     game = discord.Game("!gvawhelp")
     await client.change_presence(status=discord.Status.online, activity=game)
 
@@ -57,15 +55,7 @@ async def serverstats(ctx, serverTitle: str = None):
     guildId = str(ctx.message.guild.id)
 
     await gvaw_commands.serverstats.server_statsLogic(
-        ctx,
-        firestore,
-        db,
-        author,
-        channelId,
-        guildId,
-        serverTitle,
-        discord.Embed,
-        capture_message,
+        ctx, firestore, db, author, channelId, guildId, serverTitle, discord.Embed
     )
 
     analytics.track(
@@ -85,7 +75,8 @@ async def serverstats(ctx, serverTitle: str = None):
 
 @serverstats.error
 async def serverstats_error(ctx, error):
-    await ctx.send(str(error))
+    logger.error({"cmd": "serverstats", "error": error})
+    return await ctx.send(f"An error has occured, please contact {author}")
 
 
 @client.command(pass_context=True)
@@ -94,15 +85,7 @@ async def serversearch(ctx, serverTitle: str = None):
     guildId = str(ctx.message.guild.id)
 
     await gvaw_commands.serversearch.server_searchLogic(
-        ctx,
-        discord.Embed,
-        firestore,
-        db,
-        author,
-        channelId,
-        guildId,
-        serverTitle,
-        capture_message,
+        ctx, discord.Embed, firestore, db, author, channelId, guildId, serverTitle
     )
 
     analytics.track(
@@ -118,6 +101,12 @@ async def serversearch(ctx, serverTitle: str = None):
             "Server name": serverTitle,
         },
     )
+
+
+@serversearch.error
+async def serversearch_error(ctx, error):
+    logger.error({"cmd": "serversearch", "error": error})
+    return await ctx.send(f"An error has occured, please contact {author}")
 
 
 @client.command(pass_context=True)
@@ -170,7 +159,8 @@ async def serverconfig_error(ctx, error):
         await ctx.send("Assigned name must not include any space or special character.")
 
     else:
-        capture_message(error)
+        logger.error({"cmd": "serverconfig", "error": error})
+        return await ctx.send(f"An error has occured, please contact {author}")
 
 
 @client.command(pass_context=True)
@@ -207,7 +197,8 @@ async def channelconfig_error(ctx, error):
         )
 
     else:
-        capture_message(error)
+        logger.error({"cmd": "channelconfig", "error": error})
+        return await ctx.send(f"An error has occured, please contact {author}")
 
 
 @client.command(pass_context=True)

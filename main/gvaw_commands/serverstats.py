@@ -4,15 +4,7 @@ from asyncio import TimeoutError as async_TimeOutError
 
 
 async def server_statsLogic(
-    ctx,
-    firestore,
-    db,
-    author,
-    channelId,
-    guildId,
-    serverTitle,
-    discordEmbed,
-    capture_message,
+    ctx, firestore, db, author, channelId, guildId, serverTitle, discordEmbed
 ):
     channelList = utility.retrieveDb_data(db, option="channel-list", title=guildId)
     channelVerify = await utility.checkChannel(
@@ -61,7 +53,7 @@ async def server_statsLogic(
             }
             serverUrl = "https://www.digitalcombatsimulator.com/en/auth/"
             servers_body = await utility.getDCS_data(
-                serverUrl, params=None, key=dcsKeys, capture_message=capture_message
+                serverUrl, params=None, key=dcsKeys
             )
             servers = json.loads(servers_body)
             serverIndex = next(

@@ -1,5 +1,7 @@
 import aiohttp
+import logging
 
+logger = logging.getLogger(__name__)
 gvawLogo_url = "https://units.arma3.com/groups/img/165841/ZU3SH51cXb.png"
 
 
@@ -19,7 +21,7 @@ async def asyncPost(*args, **kwargs):
             return response
 
 
-async def getData(url, params, capture_message):
+async def getData(url, params):
     response = await asyncGet(url, params=params)
 
     if response.status == 200:
@@ -27,10 +29,10 @@ async def getData(url, params, capture_message):
         return data
 
     else:
-        capture_message(f"Battlemetrics API: {response.status}")
+        logger.error(f"{url}: {response.status}")
 
 
-async def getDCS_data(url, params, key, capture_message):
+async def getDCS_data(url, params, key):
     payload = {
         "AUTH_FORM": "Y",
         "TYPE": "AUTH",
@@ -46,7 +48,7 @@ async def getDCS_data(url, params, key, capture_message):
         return data
 
     else:
-        capture_message(f"DCS: {response.status}")
+        logger.error(f"DCS: {response.status}")
 
 
 def retrieveDb_data(db, option, title):
