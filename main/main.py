@@ -170,7 +170,15 @@ async def channelconfig(ctx, operation: str = None, channel: str = None):
     guildId = str(ctx.message.guild.id)
 
     await gvaw_commands.channelconfig.channel_configLogic(
-        ctx, discord.Embed, firestore, db, channelId, guildId, operation, channel
+        ctx,
+        client.get_channel,
+        discord.Embed,
+        firestore,
+        db,
+        channelId,
+        guildId,
+        operation,
+        channel,
     )
 
     analytics.track(
