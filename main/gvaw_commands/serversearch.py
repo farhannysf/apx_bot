@@ -1,6 +1,8 @@
 import utility
 import logging
+
 logger = logging.getLogger(__name__)
+
 
 async def server_searchLogic(
     ctx, discordEmbed, firestore, db, author, channelId, guildId, serverTitle

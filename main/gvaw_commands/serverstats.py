@@ -5,6 +5,7 @@ from asyncio import TimeoutError as async_TimeOutError
 
 logger = logging.getLogger(__name__)
 
+
 async def server_statsLogic(
     ctx, firestore, db, author, channelId, guildId, serverTitle, discordEmbed
 ):
@@ -113,37 +114,41 @@ async def server_statsLogic(
 
         except (ConnectionRefusedError, async_TimeOutError):
             serverStats = "offline"
+            return await ctx.send(f"`{serverTitle} ({serverIP[0]}) is {serverStats}.`")
 
         except Exception as e:
             logger.error(e)
             return await ctx.send("Cannot retrieve data from server.")
 
         serverStats = "online"
-        if server.map_name == '':
-            serverStats = "offline"
+        if server.map_name == "":
+            serverStats = "mission_select"
+
+        serverDescription = serverStats.title()
+        if serverStats == "mission_select":
+            serverDescription = "Selecting Mission"
+
+        serverName = server.server_name
+        serverPort = server.port
+        activePlayers = server.player_count
+        maxPlayers = server.max_players
+        embed = discordEmbed(
+            title=serverName, description=serverDescription, color=0x00FF00
+        )
+        embed.set_thumbnail(url=utility.gvawLogo_url)
+        embed.add_field(
+            name="__IP Address__", value=f"{serverIP[0]}:{serverPort}", inline=False
+        )
+        embed.add_field(
+            name="__Players__", value=f"{activePlayers}/{maxPlayers}", inline=False
+        )
 
         if serverStats == "online":
-            serverName = server.server_name
-            serverPort = server.port
             serverMap = server.map_name
             serverMission = server.game
-            activePlayers = server.player_count
-            maxPlayers = server.max_players
 
-            embed = discordEmbed(
-                title=serverName, description=serverStats.title(), color=0x00FF00
-            )
-            embed.set_thumbnail(url=utility.gvawLogo_url)
-            embed.add_field(
-                name="__IP Address__", value=f"{serverIP[0]}:{serverPort}", inline=False
-            )
             embed.add_field(name="__Map__", value=serverMap, inline=False)
             embed.add_field(name="__Mission__", value=serverMission, inline=False)
-            embed.add_field(
-                name="__Players__", value=f"{activePlayers}/{maxPlayers}", inline=False
-            )
-        elif serverStats == "offline":
-            return await ctx.send(f"`{serverTitle} ({serverIP[0]}) is {serverStats}.`")
 
         return await ctx.send(embed=embed)
 
