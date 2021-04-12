@@ -1,7 +1,9 @@
+import logging
 import utility
 import json
 from asyncio import TimeoutError as async_TimeOutError
 
+logger = logging.getLogger(__name__)
 
 async def server_statsLogic(
     ctx, firestore, db, author, channelId, guildId, serverTitle, discordEmbed
@@ -111,9 +113,14 @@ async def server_statsLogic(
 
         except (ConnectionRefusedError, async_TimeOutError):
             serverStats = "offline"
-            return await ctx.send(f"`{serverTitle} ({serverIP[0]}) is {serverStats}.`")
+
+        except Exception as e:
+            logger.error(e)
+            return await ctx.send("Cannot retrieve data from server.")
 
         serverStats = "online"
+        if server.map_name == '':
+            serverStats = "offline"
 
         if serverStats == "online":
             serverName = server.server_name
@@ -135,6 +142,8 @@ async def server_statsLogic(
             embed.add_field(
                 name="__Players__", value=f"{activePlayers}/{maxPlayers}", inline=False
             )
+        elif serverStats == "offline":
+            return await ctx.send(f"`{serverTitle} ({serverIP[0]}) is {serverStats}.`")
 
         return await ctx.send(embed=embed)
 
