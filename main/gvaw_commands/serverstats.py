@@ -103,11 +103,11 @@ async def server_statsLogic(
 
         from a2s import ainfo
 
-        serverPort = 2303
+        server_queryPort = 2303
         if len(serverIP) == 2:
-            serverPort = serverIP[1]
+            server_queryPort = serverIP[1]
 
-        serverAddress = (serverIP[0], serverPort)
+        serverAddress = (serverIP[0], server_queryPort)
 
         try:
             server = await ainfo(serverAddress)
@@ -129,15 +129,18 @@ async def server_statsLogic(
             serverDescription = "Selecting Mission"
 
         serverName = server.server_name
-        serverPort = server.port
+        server_gamePort = server.port
         activePlayers = server.player_count
         maxPlayers = server.max_players
+        steamURL = f"steam://connect/{serverIP[0]}:{server_queryPort}"
         embed = discordEmbed(
             title=serverName, description=serverDescription, color=0x00FF00
         )
         embed.set_thumbnail(url=utility.gvawLogo_url)
         embed.add_field(
-            name="__IP Address__", value=f"{serverIP[0]}:{serverPort}", inline=False
+            name="__IP Address__",
+            value=f"{serverIP[0]}:{server_gamePort}",
+            inline=False,
         )
         embed.add_field(
             name="__Players__", value=f"{activePlayers}/{maxPlayers}", inline=False
@@ -149,6 +152,7 @@ async def server_statsLogic(
 
             embed.add_field(name="__Map__", value=serverMap, inline=False)
             embed.add_field(name="__Mission__", value=serverMission, inline=False)
+            embed.add_field(name="__Steam URL__", value=steamURL, inline=False)
 
         return await ctx.send(embed=embed)
 
